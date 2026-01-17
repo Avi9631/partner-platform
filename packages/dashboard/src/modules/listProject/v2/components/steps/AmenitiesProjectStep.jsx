@@ -45,9 +45,18 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProjectFormV2 } from "../../context/ProjectFormContextV2";
-import amenitiesProjectSchema, { PROJECT_AMENITIES_LIST } from "../../../schemas/amenitiesProjectSchema";
+import { projectSchemas } from '@partner-platform/shared-validation';
 import SaveAndContinueFooter from "./SaveAndContinueFooter";
 import { createStepLogger } from "../../../../listProperty/utils/validationLogger";
+
+const { amenitiesProjectSchema } = projectSchemas;
+export const PROJECT_AMENITIES_LIST = [
+  'Swimming Pool', 'Gym', 'Clubhouse', 'Kids Play Area', 'Jogging Track',
+  'Sports Facility', 'Business Center', 'Cafe', 'Shopping Center', 'Guest Rooms',
+  'Pet Area', 'Senior Citizen Area', 'Amphitheater', 'Community Hall', 'Security',
+  'Gated Community', 'Intercom', 'Fire Safety', 'CCTV', 'Power Backup',
+  'Lift', 'Water Supply', 'Waste Disposal', 'Rainwater Harvesting', 'Solar Panels'
+];
 
 // Icon mapping for amenities
 const iconMapping = {

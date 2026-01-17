@@ -5,7 +5,9 @@ import { motion } from 'motion/react';
 import { Users } from 'lucide-react';
 import { Field, FieldGroup, FieldError } from '@/components/ui/field';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import suitableForSchema from '../../../schemas/suitableForSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { suitableForSchema } = propertySchemas;
 
 const suitableForOptions = [
   { value: 'family', label: 'Family', icon: '👨‍👩‍👧‍👦' },

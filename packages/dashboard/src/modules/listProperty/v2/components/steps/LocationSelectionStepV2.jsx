@@ -9,7 +9,9 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import locationSelectionSchema from '../../../schemas/locationSelectionSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { locationSelectionSchema } = propertySchemas;
 import SaveAndContinueFooter from '../SaveAndContinueFooter';
 import LocationPicker from '@/components/maps/LocationPicker';
 

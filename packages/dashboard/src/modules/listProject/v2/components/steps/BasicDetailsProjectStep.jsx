@@ -22,8 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useProjectFormV2 } from "../../context/ProjectFormContextV2";
-import basicDetailsProjectSchema from "../../../schemas/basicDetailsProjectSchema";
+import { projectSchemas } from '@partner-platform/shared-validation';
 import { createStepLogger } from "../../../../listProperty/utils/validationLogger";
+
+const { basicDetailsProjectSchema } = projectSchemas;
 
 export default function BasicDetailsProjectStep() {
   const { saveAndContinue, formData, setCurrentStepSubmitHandler } = useProjectFormV2();

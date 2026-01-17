@@ -8,8 +8,10 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { useProjectFormV2 } from "../../context/ProjectFormContextV2";
-import locationDetailsProjectSchema from "../../../schemas/locationDetailsProjectSchema";
+import { projectSchemas } from '@partner-platform/shared-validation';
 import LocationPicker from "@/components/maps/LocationPicker";
+
+const { locationDetailsProjectSchema } = projectSchemas;
 
 export default function LocationDetailsProjectStep() {
   const { saveAndContinue, formData, setCurrentStepSubmitHandler } = useProjectFormV2();

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Shared validation schemas and step configuration for property listing",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"No tests yet\" && exit 0"
   },

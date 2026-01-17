@@ -17,7 +17,10 @@ import {
 import { useForm } from "react-hook-form";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useProjectFormV2 } from "../../context/ProjectFormContextV2";
-import { MEDIA_CATEGORIES, VIDEO_TYPES } from "../../../schemas/mediaUploadProjectSchema";
+import { projectSchemas } from '@partner-platform/shared-validation';
+
+export const MEDIA_CATEGORIES = ['Exterior', 'Interior', 'Amenities', 'Location', 'Floor Plan', 'Master Plan', 'Other'];
+export const VIDEO_TYPES = ['Project Walkthrough', 'Drone View', 'Testimonial', 'Construction Progress', 'Other'];
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

@@ -1,13 +1,12 @@
 import { z } from 'zod';
 
 /**
- * Enhanced Geo Tag Schema
+ * Geo Tag Schema (Enhanced)
  * Phase 1 & 2 Enhancement - Step 2: Geo Tag
  * 
  * Adds verification mode, environment type, and optional verification photo
  */
-export const enhancedGeoTagSchema = z.object({
-  // Existing fields (from geoTagSchema)
+export const geoTagSchema = z.object({
   geoTagStatus: z.enum(['pending', 'success', 'failed']).default('pending'),
   geoTagCoordinates: z.object({
     lat: z.number(),
@@ -16,7 +15,7 @@ export const enhancedGeoTagSchema = z.object({
   geoTagDistance: z.number().optional(),
   geoTagTimestamp: z.string().optional(),
   
-  // NEW: Phase 1 enhancements
+  // Enhanced fields - Phase 1
   verificationMode: z.enum([
     'automatic',      // GPS-based automatic verification
     'manual',         // Manual verification (for agents with override)
@@ -28,7 +27,7 @@ export const enhancedGeoTagSchema = z.object({
     'rural'
   ]).optional(),
   
-  // NEW: Phase 2 enhancement
+  // Enhanced fields - Phase 2
   verificationPhotoUrl: z.string().url().optional(),
   verificationPhotoUploadedAt: z.string().optional(),
 }).refine((data) => {
@@ -42,4 +41,4 @@ export const enhancedGeoTagSchema = z.object({
   path: ['geoTagCoordinates'],
 });
 
-export default enhancedGeoTagSchema;
+export default geoTagSchema;

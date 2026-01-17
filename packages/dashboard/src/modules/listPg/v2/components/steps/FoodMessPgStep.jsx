@@ -43,9 +43,13 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { usePgFormV2 } from '../../context/PgFormContextV2';
-import foodMessPgSchema, { DAYS_OF_WEEK, SAMPLE_MEALS } from '../../../schemas/foodMessPgSchema';
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
 import SaveAndContinueFooter from './SaveAndContinueFooter';
 import { createStepLogger } from '../../../../listProperty/utils/validationLogger';
+
+const { foodMessPgSchema } = pgHostelSchemas;
+export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const SAMPLE_MEALS = ['Breakfast', 'Lunch', 'Dinner'];
 
 const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner'];
 const FOOD_TYPE_OPTIONS = ['Veg', 'Non-veg', 'Veg & Non-veg'];

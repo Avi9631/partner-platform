@@ -1,13 +1,12 @@
 import { z } from 'zod';
 
 /**
- * Enhanced Location Selection Schema
+ * Location Selection Schema (Enhanced)
  * Phase 1 Enhancement - Step 1: Location Selection
  * 
  * Adds pincode, zone/region, and nearby landmarks
  */
-export const enhancedLocationSchema = z.object({
-  // Existing fields (from locationSelectionSchema)
+export const locationSelectionSchema = z.object({
   coordinates: z.object({
     lat: z.number(),
     lng: z.number(),
@@ -18,7 +17,7 @@ export const enhancedLocationSchema = z.object({
   landmark: z.string().optional(),
   showMapExact: z.boolean().default(false),
   
-  // NEW: Phase 1 enhancements
+  // Enhanced fields - Phase 1
   pincode: z.string()
     .regex(/^\d{6}$/, 'Pincode must be 6 digits')
     .optional(),
@@ -43,4 +42,4 @@ export const enhancedLocationSchema = z.object({
   })).max(5, 'Maximum 5 landmarks allowed').optional().default([]),
 });
 
-export default enhancedLocationSchema;
+export default locationSelectionSchema;

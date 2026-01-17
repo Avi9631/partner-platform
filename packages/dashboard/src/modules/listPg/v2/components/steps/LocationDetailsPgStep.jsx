@@ -8,9 +8,12 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { usePgFormV2 } from '../../context/PgFormContextV2';
-import locationSelectionSchema from '../../../schemas/locationDetailsPgSchema';
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
 import LocationPicker from '@/components/maps/LocationPicker';
 import { useEffect } from 'react';
+
+const { locationDetailsPgSchema } = pgHostelSchemas;
+const locationSelectionSchema = locationDetailsPgSchema;
 
 const STEP_ID = 'location-details';
 

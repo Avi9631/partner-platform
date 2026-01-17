@@ -4,14 +4,18 @@
  */
 
 import { z } from 'zod';
-import basicDetailsPgSchema from '../../schemas/basicDetailsPgSchema';
-import locationDetailsPgSchema from '../../schemas/locationDetailsPgSchema';
-import roomTypesPgSchema from '../../schemas/roomTypesPgSchema';
-import amenitiesPgSchema from '../../schemas/amenitiesPgSchema';
-import foodMessPgSchema from '../../schemas/foodMessPgSchema';
-import rulesRestrictionsPgSchema from '../../schemas/rulesRestrictionsPgSchema';
-import mediaUploadPgSchema from '../../schemas/mediaUploadPgSchema';
-import availabilityPgSchema from '../../schemas/availabilityPgSchema';
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
+
+const {
+  basicDetailsPgSchema,
+  locationDetailsPgSchema,
+  roomTypesPgSchema,
+  amenitiesPgSchema,
+  foodMessPgSchema,
+  rulesRestrictionsPgSchema,
+  mediaUploadPgSchema,
+  availabilityPgSchema,
+} = pgHostelSchemas;
 
 /**
  * Map of step IDs to their validation schemas

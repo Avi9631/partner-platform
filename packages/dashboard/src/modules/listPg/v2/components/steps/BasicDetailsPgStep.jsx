@@ -29,8 +29,10 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePgFormV2 } from "../../context/PgFormContextV2";
-import basicDetailsPgSchema from "../../../schemas/basicDetailsPgSchema";
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
 import { createStepLogger } from "../../../../listProperty/utils/validationLogger";
+
+const { basicDetailsPgSchema } = pgHostelSchemas;
 
 const STEP_ID = 'basic-details';
 

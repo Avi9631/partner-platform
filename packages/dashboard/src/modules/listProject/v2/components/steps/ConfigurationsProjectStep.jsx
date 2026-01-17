@@ -4,13 +4,23 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useProjectFormV2 } from "../../context/ProjectFormContextV2";
-import configurationsProjectSchema, { PROPERTY_CATEGORY } from "../../../schemas/configurationsProjectSchema";
-import { 
+import { projectSchemas } from '@partner-platform/shared-validation';
+
+const { 
+  configurationsProjectSchema, 
+  configurationHelpers 
+} = projectSchemas;
+
+const { 
   getConfigurationTypeOptions, 
   getDefaultConfigValues,
   getPropertyCategory,
   formatConfigurationName,
-} from "../../../schemas/configurationHelpers";
+} = configurationHelpers;
+export const PROPERTY_CATEGORY = {
+  RESIDENTIAL: 'residential',
+  COMMERCIAL: 'commercial'
+};
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";

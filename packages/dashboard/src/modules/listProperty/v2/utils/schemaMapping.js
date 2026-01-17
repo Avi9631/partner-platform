@@ -3,18 +3,22 @@
  * Maps step IDs to their corresponding validation schemas
  */
 
-import basicDetailsSchema from '../../schemas/basicDetailsSchema';
-import basicConfigurationSchema from '../../schemas/basicConfigurationSchema';
-import unitAmenitiesSchema from '../../schemas/unitAmenitiesSchema';
-import locationSelectionSchema from '../../schemas/locationSelectionSchema';
-import locationAttributesSchema from '../../schemas/locationAttributesSchema';
-import floorDetailsSchema from '../../schemas/floorDetailsSchema';
-import landAttributesSchema from '../../schemas/landAttributesSchema';
-import pricingInformationSchema from '../../schemas/pricingInformationSchema';
-import suitableForSchema from '../../schemas/suitableForSchema';
-import listingInformationSchema from '../../schemas/listingInformationSchema';
-import propertyAmenitiesSchema from '../../schemas/propertyAmenitiesSchema';
-import mediaUploadSchema from '../../schemas/mediaUploadSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const {
+  basicDetailsSchema,
+  basicConfigurationSchema,
+  unitAmenitiesSchema,
+  locationSelectionSchema,
+  locationAttributesSchema,
+  floorDetailsSchema,
+  landAttributesSchema,
+  pricingInformationSchema,
+  suitableForSchema,
+  listingInformationSchema,
+  propertyAmenitiesSchema,
+  mediaUploadSchema,
+} = propertySchemas;
 
 /**
  * Map of step IDs to their validation schemas

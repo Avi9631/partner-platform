@@ -1,29 +1,35 @@
 /**
  * Shared Validation Schemas Index
  * 
- * Exports all property validation schemas for use in frontend and backend
+ * Exports all validation schemas organized by category for use in frontend and backend
  */
 
-const schemas = {
-  basicDetailsSchema: require('./schemas/basicDetailsSchema'),
-  locationSelectionSchema: require('./schemas/locationSelectionSchema'),
-  basicConfigurationSchema: require('./schemas/basicConfigurationSchema'),
-  unitAmenitiesSchema: require('./schemas/unitAmenitiesSchema'),
-  locationAttributesSchema: require('./schemas/locationAttributesSchema'),
-  floorDetailsSchema: require('./schemas/floorDetailsSchema'),
-  landAttributesSchema: require('./schemas/landAttributesSchema'),
-  pricingInformationSchema: require('./schemas/pricingInformationSchema'),
-  listingInformationSchema: require('./schemas/listingInformationSchema'),
-  propertyAmenitiesSchema: require('./schemas/propertyAmenitiesSchema'),
-  mediaUploadSchema: require('./schemas/mediaUploadSchema'),
-  parkingUtilitiesSchema: require('./schemas/parkingUtilitiesSchema'),
-  suitableForSchema: require('./schemas/suitableForSchema'),
+// Import schemas from organized subdirectories
+import * as propertySchemas from './schemas/property/index.js';
+import * as projectSchemas from './schemas/project/index.js';
+import * as pgHostelSchemas from './schemas/pg-hostel/index.js';
+import * as developerSchemas from './schemas/developer/index.js';
+import stepConfig from './config/stepConfiguration.js';
+
+// Legacy export for backward compatibility
+const schemas = propertySchemas;
+
+// Named exports for ES6 modules
+export {
+  propertySchemas,
+  projectSchemas,
+  pgHostelSchemas,
+  developerSchemas,
+  schemas,
+  stepConfig,
 };
 
-// Export stepConfiguration (will be added next)
-const stepConfig = require('./config/stepConfiguration');
-
-module.exports = {
+// Default export for compatibility
+export default {
+  propertySchemas,
+  projectSchemas,
+  pgHostelSchemas,
+  developerSchemas,
   schemas,
   stepConfig,
 };

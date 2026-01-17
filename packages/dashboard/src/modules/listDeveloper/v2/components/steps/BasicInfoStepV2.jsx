@@ -17,8 +17,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDeveloperFormV2 } from "../../context/DeveloperFormContextV2";
-import { basicInfoSchema } from "../../../schemas/basicInfoSchema";
+import { developerSchemas } from '@partner-platform/shared-validation';
 import { useToast } from "@/components/hooks/use-toast";
+
+const { basicInfoSchema } = developerSchemas;
 
 export default function BasicInfoStepV2() {
   const { formData, publishDeveloper, onClose } = useDeveloperFormV2();

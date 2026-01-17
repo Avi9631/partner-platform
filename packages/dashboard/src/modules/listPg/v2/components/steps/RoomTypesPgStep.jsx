@@ -69,10 +69,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { usePgFormV2 } from "../../context/PgFormContextV2";
-import roomTypesPgSchema from "../../../schemas/roomTypesPgSchema";
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
 import { createStepLogger } from "../../../../listProperty/utils/validationLogger";
 import { uploadMultipleFiles } from "@/lib/uploadUtils";
 import { z } from "zod";
+
+const { roomTypesPgSchema } = pgHostelSchemas;
 
 // Room amenities list matching JSON structure
 const ROOM_AMENITIES = [

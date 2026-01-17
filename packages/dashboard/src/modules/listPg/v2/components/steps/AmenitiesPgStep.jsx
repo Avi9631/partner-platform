@@ -15,9 +15,17 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePgFormV2 } from '../../context/PgFormContextV2';
-import amenitiesPgSchema, { COMMON_AMENITIES_LIST } from '../../../schemas/amenitiesPgSchema';
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
 import SaveAndContinueFooter from './SaveAndContinueFooter';
 import { createStepLogger } from '../../../../listProperty/utils/validationLogger';
+
+const { amenitiesPgSchema } = pgHostelSchemas;
+export const COMMON_AMENITIES_LIST = [
+  'WiFi', 'Parking', 'Security', 'CCTV', 'Power Backup', 'Laundry',
+  'Gym', 'Common Area', 'Kitchen', 'Dining Area', 'TV', 'Refrigerator',
+  'Water Purifier', 'AC', 'Geyser', 'Garden', 'Terrace', 'Elevator',
+  'Housekeeping', 'Meal Service'
+];
 
 // Enhanced amenities with emoji icons for better visual appeal
 const enhancedAmenitiesList = [

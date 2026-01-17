@@ -10,7 +10,9 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import basicDetailsSchema from '../../../schemas/basicDetailsSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { basicDetailsSchema } = propertySchemas;
 import SaveAndContinueFooter from '../SaveAndContinueFooter';
 import { createStepLogger } from '../../../utils/validationLogger';
 

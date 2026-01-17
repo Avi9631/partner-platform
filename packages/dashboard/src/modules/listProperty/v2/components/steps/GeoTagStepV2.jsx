@@ -10,7 +10,9 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import geoTagSchema from '../../../schemas/geoTagSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { geoTagSchema } = propertySchemas;
 
 // Maximum allowed distance in meters for successful geo-tagging
 const MAX_GEOTAG_DISTANCE_METERS = 1000;

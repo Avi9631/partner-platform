@@ -33,9 +33,11 @@ import {
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import basicDetailsSchema from '../../../schemas/basicDetailsSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
 import SaveAndContinueFooter from '../SaveAndContinueFooter';
 import { createStepLogger } from '../../../utils/validationLogger';
+
+const { basicDetailsSchema } = propertySchemas;
 
 const STEP_ID = 'basic-details';
 

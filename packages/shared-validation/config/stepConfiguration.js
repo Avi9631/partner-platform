@@ -342,7 +342,22 @@ const getStepIds = (propertyType) => {
 // EXPORTS
 // ============================================
 
-module.exports = {
+export {
+  STEPS,
+  PROPERTY_TYPE_STEPS,
+  getVisibleSteps,
+  getTotalVisibleSteps,
+  getStepName,
+  isStepVisible,
+  getStepIndexById,
+  getAvailablePropertyTypes,
+  isBuildingType,
+  isLandType,
+  isHybridType,
+  getStepIds,
+};
+
+export default {
   STEPS,
   PROPERTY_TYPE_STEPS,
   getVisibleSteps,

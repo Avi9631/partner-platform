@@ -14,7 +14,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import parkingUtilitiesSchema from '../../../schemas/parkingUtilitiesSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { parkingUtilitiesSchema } = propertySchemas;
 
 const STEP_ID = 'parking';
 

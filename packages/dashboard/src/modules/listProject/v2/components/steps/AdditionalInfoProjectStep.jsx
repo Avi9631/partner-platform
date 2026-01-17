@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useProjectFormV2 } from "../../context/ProjectFormContextV2";
-import additionalInfoProjectSchema from "../../../schemas/additionalInfoProjectSchema";
+import { projectSchemas } from '@partner-platform/shared-validation';
+
+const { additionalInfoProjectSchema } = projectSchemas;
 
 export default function AdditionalInfoProjectStep() {
   const { saveAndContinue, formData, setCurrentStepSubmitHandler } = useProjectFormV2();

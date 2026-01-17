@@ -20,7 +20,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import areaDetailsSchema from '../../../schemas/areaDetailsSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { areaDetailsSchema } = propertySchemas;
 import { createStepLogger } from '../../../utils/validationLogger';
 
 const STEP_ID = 'area-details';

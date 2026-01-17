@@ -20,7 +20,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import basicConfigurationSchema from '../../../schemas/basicConfigurationSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { basicConfigurationSchema } = propertySchemas;
 
 const STEP_ID = 'basic-configuration';
 

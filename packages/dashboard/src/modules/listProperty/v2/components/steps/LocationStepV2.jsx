@@ -13,7 +13,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import locationAttributesSchema from '../../../schemas/locationAttributesSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
+
+const { locationAttributesSchema } = propertySchemas;
 
 const facingOptions = [
   'East',

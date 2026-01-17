@@ -12,8 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import unitAmenitiesSchema from '../../../schemas/unitAmenitiesSchema';
+import { propertySchemas } from '@partner-platform/shared-validation';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
+
+const { unitAmenitiesSchema } = propertySchemas;
 
 const furnishingOptions = [
   { value: 'unfurnished', label: 'Unfurnished', description: 'No furniture or fittings' },

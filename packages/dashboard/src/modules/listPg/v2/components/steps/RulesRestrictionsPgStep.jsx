@@ -58,8 +58,16 @@ import {
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { usePgFormV2 } from '../../context/PgFormContextV2';
-import rulesRestrictionsPgSchema, { RULE_CATEGORIES, SAMPLE_RULES } from '../../../schemas/rulesRestrictionsPgSchema';
+import { pgHostelSchemas } from '@partner-platform/shared-validation';
 import { createStepLogger } from '../../../../listProperty/utils/validationLogger';
+
+const { rulesRestrictionsPgSchema } = pgHostelSchemas;
+export const RULE_CATEGORIES = ['Timing', 'Visitors', 'Smoking', 'Alcohol', 'Pets', 'Food', 'Noise', 'Other'];
+export const SAMPLE_RULES = [
+  { category: 'Timing', rule: 'Gate closing time: 11:00 PM' },
+  { category: 'Visitors', rule: 'Visitors allowed till 9:00 PM' },
+  { category: 'Smoking', rule: 'Smoking not allowed' }
+];
 
 // Icon mapping
 const ICON_MAP = {

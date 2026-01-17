@@ -1,0 +1,19 @@
+{
+  "name": "@partner-platform/shared-validation",
+  "version": "1.0.0",
+  "description": "Shared validation schemas and step configuration for property listing",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": ["validation", "zod", "property", "schemas"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.0"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "partner-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Partner Platform Monorepo - Backend, Dashboard, and Shared Validation",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:backend": "npm run dev --workspace=@partner-platform/backend",
+    "dev:dashboard": "npm run dev --workspace=@partner-platform/dashboard",
+    "build": "npm run build --workspaces --if-present",
+    "build:backend": "npm run build --workspace=@partner-platform/backend",
+    "build:dashboard": "npm run build --workspace=@partner-platform/dashboard",
+    "start:backend": "npm run start --workspace=@partner-platform/backend",
+    "start:dashboard": "npm run start --workspace=@partner-platform/dashboard",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present && npx rimraf node_modules",
+    "clean:modules": "npx rimraf node_modules packages/*/node_modules",
+    "install:all": "npm install",
+    "worker:dev": "npm run worker:dev --workspace=@partner-platform/backend"
+  },
+  "devDependencies": {
+    "eslint": "^9.12.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

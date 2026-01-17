@@ -1,8 +1,9 @@
-const db = require("../entity");
+import db from '../entity/index.js';
+import { Op } from 'sequelize';
+import logger from '../config/winston.config.js';
+
 const Developer = db.Developer;
 const PlatformUser = db.PlatformUser;
-const { Op } = require("sequelize");
-const logger = require("../config/winston.config");
 
  
 
@@ -342,13 +343,4 @@ const deleteDeveloper = async (developerId, userId) => {
   }
 };
 
-module.exports = {
-  createDeveloper,
-  updateDeveloper,
-  getDeveloperById,
-   getDevelopersByUserId,
-  listDevelopers,
-  updatePublishStatus,
-  updateVerificationStatus,
-  deleteDeveloper
-};
+export default { createDeveloper, updateDeveloper, getDeveloperById, getDevelopersByUserId, listDevelopers, updatePublishStatus, updateVerificationStatus, deleteDeveloper };

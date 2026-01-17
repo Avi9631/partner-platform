@@ -1,7 +1,8 @@
-const express = require("express");
+import express from 'express';
+import PgColiveHostelController from '../controller/PgColiveHostel.controller.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const PgColiveHostelController = require("../controller/PgColiveHostel.controller.js");
-const { authenticateToken } = require("../middleware/authMiddleware");
 
 /**
  * @route   POST /api/pg-hostel/publishPgColiveHostel
@@ -58,4 +59,4 @@ router.delete(
   PgColiveHostelController.deletePgHostel
 );
 
-module.exports = router;
+export default router;

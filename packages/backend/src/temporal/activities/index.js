@@ -5,13 +5,17 @@
  * Import and re-export all activity modules here
  */
 
-const nodemailer = require('nodemailer');
-const logger = require('../../config/winston.config');
 
 /**
  * Activity: Send Email
  * Sends an email using nodemailer
  */
+import nodemailer from 'nodemailer';
+import logger from '../../config/winston.config.js';
+import paymentActivities from './paymentActivities.js';
+import listingActivities from './listingActivities.js';
+import analyticsActivities from './analyticsActivities.js';
+
 async function sendEmail({ to, subject, body, attachments }) {
     try {
         logger.info(`Sending email to ${to}: ${subject}`);
@@ -115,24 +119,10 @@ async function sendWelcomePackage({ userId, email, name }) {
 }
 
 // Import specialized activities
-const paymentActivities = require('./paymentActivities');
-const listingActivities = require('./listingActivities');
-const analyticsActivities = require('./analyticsActivities');
 
 // Export all activities
-module.exports = {
-    // Basic activities
-    sendEmail,
-    processNotification,
-    updateUserStatus,
-    sendWelcomePackage,
-    
-    // Payment activities
-    ...paymentActivities,
-    
-    // Listing activities
-    ...listingActivities,
-    
-    // Analytics activities
-    ...analyticsActivities,
-};
+export { // Basic activities
+    sendEmail, processNotification, updateUserStatus, sendWelcomePackage, // Payment activities
+    ...paymentActivities, // Listing activities
+    ...listingActivities, // Analytics activities
+    ...analyticsActivities };

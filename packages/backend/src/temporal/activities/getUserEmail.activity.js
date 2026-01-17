@@ -6,9 +6,10 @@
  * @module temporal/activities/getUserEmail
  */
 
-const db = require("../../entity");
+import db from '../../entity/index.js';
+import logger from '../../config/winston.config.js';
+
 const PlatformUser = db.PlatformUser;
-const logger = require("../../config/winston.config");
 
 /**
  * Get user email by user ID
@@ -44,6 +45,4 @@ async function getUserEmail({ userId }) {
   }
 }
 
-module.exports = {
-  getUserEmail
-};
+export default { getUserEmail };

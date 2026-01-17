@@ -1,14 +1,15 @@
 /**
  * Utility functions for formatting dates and times
  */
-const logger = require("../config/winston.config");
 
 /**
  * Format a date string into dd-MMM-YYYY format
  * @param {Date|string} date - The date to format
  * @returns {string|null} Formatted date string or null if input is invalid
  */
-exports.formatDate = (date) => {
+import logger from '../config/winston.config.js';
+
+export const formatDate = (date) => {
   if (!date) return null;
   try {
     const d = new Date(date);
@@ -29,7 +30,7 @@ exports.formatDate = (date) => {
  * @param {Date|string} date - The date to format
  * @returns {string|null} Formatted time string or null if input is invalid
  */
-exports.formatTime = (date) => {
+export const formatTime = (date) => {
   if (!date) return null;
   try {
     const d = new Date(date);
@@ -46,7 +47,7 @@ exports.formatTime = (date) => {
  * Get current timestamp in ISO format
  * @returns {string} Current timestamp in ISO format
  */
-exports.getCurrentTimestamp = () => {
+export const getCurrentTimestamp = () => {
   return new Date().toISOString();
 };
 
@@ -56,7 +57,7 @@ exports.getCurrentTimestamp = () => {
  * @param {Date|string} date2 - Second date (defaults to current date if not provided)
  * @returns {number} Difference in days
  */
-exports.daysDifference = (date1, date2 = new Date()) => {
+export const daysDifference = (date1, date2 = new Date()) => {
   try {
     const d1 = new Date(date1);
     const d2 = date2 instanceof Date ? date2 : new Date(date2);

@@ -1,13 +1,14 @@
-const { Worker } = require('bullmq');
-const { getRedisConfig } = require('../config/redis.config');
-const logger = require('../config/winston.config.js');
-const nodemailer = require('nodemailer');
 
 /**
  * Email Worker
  * Processes email jobs from the queue
  * Using official redis package with BullMQ
  */
+
+import { Worker } from 'bullmq';
+import { getRedisConfig } from '../config/redis.config.js';
+import logger from '../config/winston.config.js';
+import nodemailer from 'nodemailer';
 
 let emailWorker = null;
 let transporter = null;
@@ -296,8 +297,4 @@ if (process.env.START_EMAIL_WORKER !== 'false') {
     });
 }
 
-module.exports = {
-    startEmailWorker,
-    stopEmailWorker,
-    processEmailJob
-};
+export { startEmailWorker, stopEmailWorker, processEmailJob };

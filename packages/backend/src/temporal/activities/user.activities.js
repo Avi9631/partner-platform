@@ -6,8 +6,6 @@
  * @module temporal/activities/user
  */
 
-const logger = require('../../config/winston.config');
-const nodemailer = require('nodemailer');
 
 /** @typedef {import('../../types').EmailData} EmailData */
 /** @typedef {import('../../types').NotificationData} NotificationData */
@@ -20,6 +18,9 @@ const nodemailer = require('nodemailer');
  * @param {EmailData} emailData - Email details
  * @returns {Promise<{success: boolean, to: string, subject: string}>}
  */
+import logger from '../../config/winston.config.js';
+import nodemailer from 'nodemailer';
+
 async function sendEmail({ to, subject, body, attachments }) {
     try {
         logger.info(`[Email Activity] Sending email to ${to}: ${subject}`);
@@ -175,10 +176,4 @@ async function sendNotification({ userId, type, message, metadata }) {
     }
 }
 
-module.exports = {
-    sendEmail,
-    processNotification,
-    updateUserStatus,
-    sendWelcomePackage,
-    sendNotification,
-};
+export default { sendEmail, processNotification, updateUserStatus, sendWelcomePackage, sendNotification };

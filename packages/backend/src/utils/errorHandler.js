@@ -1,11 +1,12 @@
-const logger = require('../config/winston.config');
 
 /**
  * Handle different types of errors and send appropriate response
  * @param {Object} res - Express response object
  * @param {Error} error - Error object
  */
-exports.handleError = (res, error) => {
+import logger from '../config/winston.config.js';
+
+export const handleError = (res, error) => {
     logger.error(`Error: ${error.message}`, { 
         stack: error.stack,
         name: error.name

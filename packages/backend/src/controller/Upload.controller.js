@@ -1,6 +1,3 @@
-const { generatePresignedUrls } = require("../utils/s3Upload");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const logger = require("../config/winston.config");
 
 /**
  * Generate multiple presigned URLs for direct S3 upload
@@ -12,6 +9,10 @@ const logger = require("../config/winston.config");
  *   bucketName: string (optional)
  * }
  */
+import { generatePresignedUrls } from '../utils/s3Upload.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import logger from '../config/winston.config.js';
+
 const getPresignedUrls = async (req, res) => {
   try {
     const userId = req.user.userId; // From auth middleware
@@ -87,6 +88,4 @@ const getPresignedUrls = async (req, res) => {
   }
 };
 
-module.exports = {
-  getPresignedUrls,
-};
+export default { getPresignedUrls };

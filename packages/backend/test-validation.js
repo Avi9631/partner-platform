@@ -4,7 +4,8 @@
  * Run: node test-validation.js
  */
 
-const { schemas, stepConfig } = require('@partner-platform/shared-validation');
+
+import { schemas, stepConfig } from '@partner-platform/shared-validation';
 
 console.log('🧪 Testing Shared Validation Package\n');
 

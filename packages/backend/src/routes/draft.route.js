@@ -1,8 +1,9 @@
-const express = require("express");
+import express from 'express';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+import { uploadListingDraftMedia, handleUploadError } from '../middleware/uploadMiddleware.js';
+import ListingDraftController from '../controller/ListingDraft.controller.js';
+
 const router = express.Router();
-const { authenticateToken } = require("../middleware/authMiddleware");
-const { uploadListingDraftMedia, handleUploadError } = require("../middleware/uploadMiddleware");
-const ListingDraftController = require("../controller/ListingDraft.controller");
 
  
 router.get("/ping", function (req, res) {
@@ -19,4 +20,4 @@ router.get("/listingDraft", authenticateToken, ListingDraftController.getUserLis
 
 router.get("/listingDraft/:id", authenticateToken, ListingDraftController.getListingDraftById);
 
-module.exports = router;
+export default router;

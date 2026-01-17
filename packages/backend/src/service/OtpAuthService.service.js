@@ -1,8 +1,9 @@
-const db = require("../entity/index.js");
-const logger = require("../config/winston.config.js");
-const crypto = require("crypto");
 
 // In-memory OTP storage (for production, use Redis or database)
+import db from '../entity/index.js';
+import logger from '../config/winston.config.js';
+import crypto from 'crypto';
+
 const otpStore = new Map();
 
 // OTP expiry time in minutes
@@ -199,8 +200,4 @@ function cleanupExpiredOtps() {
 // Run cleanup every 5 minutes
 setInterval(cleanupExpiredOtps, 5 * 60 * 1000);
 
-module.exports = {
-  sendOtp,
-  verifyOtp,
-  resendOtp,
-};
+export default { sendOtp, verifyOtp, resendOtp };

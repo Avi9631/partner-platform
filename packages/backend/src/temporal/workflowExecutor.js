@@ -10,15 +10,8 @@
  * @module temporal/workflowExecutor
  */
 
-const logger = require('../config/winston.config');
 
 // Import non-Temporal workflow implementations from skip-workflow folder
-const { partnerUserOnboarding } = require('./workflows/skip-workflow/partnerOnboarding-non.workflow');
-const { partnerBusinessOnboarding } = require('./workflows/skip-workflow/partnerBusinessOnboarding-non.workflow');
-const { propertyPublishing } = require('./workflows/skip-workflow/propertyPublishing-non.workflow');
-const { developerPublishing } = require('./workflows/skip-workflow/developerPublishing-non.workflow');
-const { projectPublishing } = require('./workflows/skip-workflow/projectPublishing-non.workflow');
-const { pgHostelPublishing } = require('./workflows/skip-workflow/pgHostelPublishing-non.workflow');
 
 /**
  * Execute a workflow directly without Temporal
@@ -28,6 +21,14 @@ const { pgHostelPublishing } = require('./workflows/skip-workflow/pgHostelPublis
  * @param {Object} workflowInput - Input data for the workflow
  * @returns {Promise<Object>} Workflow result
  */
+import logger from '../config/winston.config.js';
+import { partnerUserOnboarding } from './workflows/skip-workflow/partnerOnboarding-non.workflow.js';
+import { partnerBusinessOnboarding } from './workflows/skip-workflow/partnerBusinessOnboarding-non.workflow.js';
+import { propertyPublishing } from './workflows/skip-workflow/propertyPublishing-non.workflow.js';
+import { developerPublishing } from './workflows/skip-workflow/developerPublishing-non.workflow.js';
+import { projectPublishing } from './workflows/skip-workflow/projectPublishing-non.workflow.js';
+import { pgHostelPublishing } from './workflows/skip-workflow/pgHostelPublishing-non.workflow.js';
+
 async function executeWorkflowDirect(workflowName, workflowInput) {
     logger.info(`[Direct Execution] Starting workflow: ${workflowName}`);
     logger.debug(`[Direct Execution] Input:`, workflowInput);
@@ -79,6 +80,4 @@ async function executeWorkflowDirect(workflowName, workflowInput) {
 }
 
 
-module.exports = {
-    executeWorkflowDirect
-};
+export { executeWorkflowDirect };

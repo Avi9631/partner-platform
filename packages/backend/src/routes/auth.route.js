@@ -1,11 +1,12 @@
-require("dotenv").config();
-const express = require("express");
+import express from 'express';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import authService from '../service/AuthService.service.js';
+import UserService from '../service/UserService.service.js';
+import logger from '../config/winston.config.js';
+
+import 'dotenv/config';
 const router = express.Router();
-const passport = require("passport");
-const jwt = require("jsonwebtoken");
-const authService = require("../service/AuthService.service");
-const UserService = require("../service/UserService.service");
-const logger = require("../config/winston.config.js");
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -330,4 +331,4 @@ router.get("/auth/logout", (req, res) => {
   res.redirect(`${frontendUrl}/signin`);
 });
 
-module.exports = router;
+export default router;

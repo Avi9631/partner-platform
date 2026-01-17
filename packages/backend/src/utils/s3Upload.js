@@ -1,8 +1,9 @@
-const { s3, defaultBucket } = require("../config/s3.config");
-const path = require("path");
-const logger = require("../config/winston.config");
 
 // Lazy load uuid to handle ES Module
+import { s3, defaultBucket } from '../config/s3.config.js';
+import path from 'path';
+import logger from '../config/winston.config.js';
+
 let uuidv4;
 const getUuidv4 = async () => {
   if (!uuidv4) {
@@ -216,7 +217,7 @@ function getExtensionFromMimeType(mimeType) {
   return mimeMap[mimeType] || '';
 }
 
-module.exports = {
+export {
   uploadToS3,
   uploadMultipleToS3,
   deleteFromS3,

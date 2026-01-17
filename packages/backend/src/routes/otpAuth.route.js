@@ -1,6 +1,7 @@
-const express = require("express");
+import express from 'express';
+import OtpAuthController from '../controller/OtpAuth.controller.js';
+
 const router = express.Router();
-const OtpAuthController = require("../controller/OtpAuth.controller.js");
 
 /**
  * @route POST /api/otp/send
@@ -23,4 +24,4 @@ router.post("/verify", OtpAuthController.verifyOtp);
  */
 router.post("/resend", OtpAuthController.resendOtp);
 
-module.exports = router;
+export default router;

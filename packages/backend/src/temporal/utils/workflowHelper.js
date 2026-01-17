@@ -8,8 +8,6 @@
  */
 
 
-const { executeWorkflowDirect } = require("../workflowExecutor");
-const logger = require("../../config/winston.config");
 
 /**
  * Execute a workflow directly (skip-workflow mode)
@@ -20,6 +18,9 @@ const logger = require("../../config/winston.config");
  * @param {Object} input - Workflow input data
  * @returns {Promise<any>} Workflow result
  */
+import { executeWorkflowDirect } from '../workflowExecutor.js';
+import logger from '../../config/winston.config.js';
+
 async function runWorkflowDirect(workflowName, input) {
   logger.info(
     `[Workflow Helper] Running ${workflowName} in direct mode (forced)`
@@ -39,11 +40,7 @@ const WORKFLOWS = {
   PG_HOSTEL_PUBLISHING: "pgHostelPublishing",
 };
 
-module.exports = {
-  runWorkflowDirect,
-
-  // Utility
+export { runWorkflowDirect, // Utility
 
   // Constants
-  WORKFLOWS,
-};
+  WORKFLOWS };

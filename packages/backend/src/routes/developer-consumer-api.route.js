@@ -1,6 +1,7 @@
-const express = require("express");
+import express from 'express';
+import DeveloperConsumerApiController from '../controller/DeveloperConsumerApiController.controller.js';
+
 const router = express.Router();
-const DeveloperConsumerApiController = require("../controller/DeveloperConsumerApiController.controller.js");
 
 /**
  * @route   GET /api/developer-consumer-api/list
@@ -48,4 +49,4 @@ router.get(
   DeveloperConsumerApiController.getDeveloperById
 );
 
-module.exports = router;
+export default router;

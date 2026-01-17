@@ -7,14 +7,17 @@
  * @module temporal/activities/developerPublishing.activities
  */
 
-const DeveloperService = require("../../service/DeveloperService.service");
-const { debitFromWallet, getWalletBalance } = require("./wallet.activities");
-const db = require("../../entity");
+import DeveloperService from '../../service/DeveloperService.service.js';
+import walletActivities from './wallet.activities.js';
+const { debitFromWallet, getWalletBalance } = walletActivities;
+import db from '../../entity/index.js';
+import logger from '../../config/winston.config.js';
+import getUserEmailActivity from './getUserEmail.activity.js';
+const { getUserEmail } = getUserEmailActivity;
+
 const Developer = db.Developer;
 const PlatformUser = db.PlatformUser;
 const ListingDraft = db.ListingDraft;
-const logger = require("../../config/winston.config");
-const { getUserEmail } = require("./getUserEmail.activity");
 
 /**
  * Validate developer data before publishing
@@ -287,13 +290,4 @@ async function deductPublishingCredits({ userId, developerId, amount = 10 }) {
   }
 }
 
-module.exports = {
-  validateDeveloperData,
-  checkDeveloperExists,
-  createDeveloperRecord,
-  updateDeveloperRecord,
-  getUserEmail,
-  sendDeveloperPublishingNotification,
-  updateListingDraftStatus,
-  deductPublishingCredits
-};
+export default { validateDeveloperData, checkDeveloperExists, createDeveloperRecord, updateDeveloperRecord, getUserEmail, sendDeveloperPublishingNotification, updateListingDraftStatus, deductPublishingCredits };

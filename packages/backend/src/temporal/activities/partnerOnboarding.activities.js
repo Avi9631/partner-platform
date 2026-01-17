@@ -6,13 +6,16 @@
  * @module temporal/activities/partnerOnboarding
  */
 
-const logger = require('../../config/winston.config');
-const { s3, defaultBucket } = require('../../config/s3.config');
-const db = require('../../entity/index');
-const PartnerBusinessService = require('../../service/PartnerBusiness.service');
-const WalletService = require('../../service/WalletService.service');
-const fs = require('fs').promises;
-const path = require('path');
+import logger from '../../config/winston.config.js';
+import { s3, defaultBucket } from '../../config/s3.config.js';
+import db from '../../entity/index.js';
+import PartnerBusinessService from '../../service/PartnerBusiness.service.js';
+import WalletService from '../../service/WalletService.service.js';
+import path from 'path';
+import userActivities from './user.activities.js';
+const { sendEmail } = userActivities;
+
+import { promises as fs } from 'fs';
 
 /**
  * Validate Business Data Activity
@@ -351,7 +354,6 @@ async function sendOnboardingNotification(notificationData) {
         logger.info(`[Onboarding Notification] Sending to ${email}`);
         
         // Import sendEmail activity
-        const { sendEmail } = require('./user.activities');
         
         await sendEmail({
             to: email,
@@ -480,13 +482,4 @@ async function addCredits({ userId, amount, reason, metadata }) {
     }
 }
 
-module.exports = {
-    validateProfileData,
-    validateBusinessData,
-    uploadVideoToSupabase,
-    updatePartnerUser,
-    updatePartnerBusiness,
-    createPartnerBusiness,
-    sendOnboardingNotification,
-    addCredits,
-};
+export default { validateProfileData, validateBusinessData, uploadVideoToSupabase, updatePartnerUser, updatePartnerBusiness, createPartnerBusiness, sendOnboardingNotification, addCredits };

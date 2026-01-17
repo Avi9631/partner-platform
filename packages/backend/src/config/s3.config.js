@@ -1,5 +1,6 @@
-const AWS = require('aws-sdk');
-require('dotenv').config();
+import AWS from 'aws-sdk';
+
+import 'dotenv/config';
 
 // S3 Configuration
 const s3Config = {
@@ -26,14 +27,10 @@ if (process.env.S3_ENDPOINT) {
 }
 
 // Create S3 instance
-const s3 = new AWS.S3(s3Config);
+export const s3 = new AWS.S3(s3Config);
 
 // Default bucket name
-const defaultBucket = process.env.S3_PARTNER_PROFILE_BUCKET || 'uploads';
+export const defaultBucket = process.env.S3_PARTNER_PROFILE_BUCKET || 'uploads';
 
-// Export configuration and instance
-module.exports = {
-    s3,
-    defaultBucket,
-    config: s3Config
-};
+// Export configuration
+export { s3Config };

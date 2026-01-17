@@ -1,9 +1,10 @@
-const multer = require("multer");
-const path = require("path");
 
 // Configure storage - Use memoryStorage to keep file in memory
 // The file buffer will be passed directly to the temporal workflow
 // No temporary files on disk needed
+import multer from 'multer';
+import path from 'path';
+
 const storage = multer.memoryStorage();
 
 // File filter to accept only videos
@@ -98,9 +99,4 @@ const handleUploadError = (err, req, res, next) => {
   next();
 };
 
-module.exports = {
-  uploadProfileVideo,
-  uploadOwnerVideo,
-  uploadListingDraftMedia,
-  handleUploadError,
-};
+export { uploadProfileVideo, uploadOwnerVideo, uploadListingDraftMedia, handleUploadError };

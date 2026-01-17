@@ -1,4 +1,4 @@
-import { CONFIG_TYPE_TO_CATEGORY, PROPERTY_CATEGORY } from './configurationsProjectSchema';
+import { CONFIG_TYPE_TO_CATEGORY, PROPERTY_CATEGORY } from './configurationsProjectSchema.js';
 
 /**
  * Get property category from configuration type

@@ -8,12 +8,13 @@
  * 
  * @module temporal/workflows/developerPublishing-non.workflow
  */
-const logger = require('../../../config/winston.config');
 
 // Import Developer specific activities
-const developerActivities = require('../../activities/developerPublishing.activities');
 
 // Combine all activities into a single object
+import logger from '../../../config/winston.config.js';
+import developerActivities from '../../activities/developerPublishing.activities.js';
+
 const activities = {
     ...developerActivities,
     // Add more activity imports here if needed
@@ -216,4 +217,4 @@ async function developerPublishing(workflowInput) {
     }
 }
 
-module.exports = { developerPublishing };
+export { developerPublishing };

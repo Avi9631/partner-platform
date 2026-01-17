@@ -1,11 +1,12 @@
-const WalletService = require("../service/WalletService.service");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const logger = require("../config/winston.config");
 
 /**
  * Get wallet balance for authenticated user
  * GET /api/wallet/balance
  */
+import WalletService from '../service/WalletService.service.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import logger from '../config/winston.config.js';
+
 const getWalletBalance = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -231,11 +232,4 @@ const checkSufficientFunds = async (req, res) => {
   }
 };
 
-module.exports = {
-  getWalletBalance,
-  getTransactionHistory,
-  getWalletStats,
-  addFunds,
-  deductFunds,
-  checkSufficientFunds
-};
+export default { getWalletBalance, getTransactionHistory, getWalletStats, addFunds, deductFunds, checkSufficientFunds };

@@ -6,10 +6,6 @@
  * @module temporal/activities/partnerBusinessOnboarding
  */
 
-const logger = require('../../config/winston.config');
-const { s3, defaultBucket } = require('../../config/s3.config');
-const db = require('../../entity/index');
-const path = require('path');
 
 /**
  * Validate Business Onboarding Data Activity
@@ -21,6 +17,13 @@ const path = require('path');
  * @param {Object} validationData.businessData - Business data
  * @returns {Promise<{success: boolean, errors?: string[]}>}
  */
+import logger from '../../config/winston.config.js';
+import { s3, defaultBucket } from '../../config/s3.config.js';
+import db from '../../entity/index.js';
+import path from 'path';
+import userActivities from './user.activities.js';
+const { sendEmail } = userActivities;
+
 async function validateBusinessOnboardingData(validationData) {
     try {
         const { userId, businessData } = validationData;
@@ -217,7 +220,6 @@ async function sendBusinessOnboardingNotification(notificationData) {
         logger.info(`[Business Onboarding Notification] Sending to ${email}`);
         
         // Import sendEmail activity
-        const { sendEmail } = require('./user.activities');
         
         await sendEmail({
             to: email,
@@ -271,9 +273,4 @@ async function sendBusinessOnboardingNotification(notificationData) {
     }
 }
 
-module.exports = {
-    validateBusinessOnboardingData,
-    createPartnerBusinessRecord,
-    updateBusinessVerificationStatus,
-    sendBusinessOnboardingNotification,
-};
+export default { validateBusinessOnboardingData, createPartnerBusinessRecord, updateBusinessVerificationStatus, sendBusinessOnboardingNotification };

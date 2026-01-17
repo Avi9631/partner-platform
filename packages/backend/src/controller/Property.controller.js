@@ -1,10 +1,11 @@
-const PropertyService = require("../service/PropertyService.service");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const { runWorkflowAsync, runWorkflowDirect, WORKFLOWS } = require("../temporal/utils/workflowHelper");
-const { transformDraftToPropertyData, validateTransformedData } = require("../utils/draftDataTransformer");
-const { validateDraftData, getValidationSummary } = require("../utils/propertyDraftValidator");
-const logger = require("../config/winston.config");
-const db = require("../entity");
+import PropertyService from '../service/PropertyService.service.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
+import { transformDraftToPropertyData, validateTransformedData } from '../utils/draftDataTransformer.js';
+import { validateDraftData, getValidationSummary } from '../utils/propertyDraftValidator.js';
+import logger from '../config/winston.config.js';
+import db from '../entity/index.js';
+
 const ListingDraft = db.ListingDraft;
 const Property = db.Property;
 
@@ -502,12 +503,4 @@ const searchNearbyProperties = async (req, res) => {
   }
 };
 
-module.exports = {
-  publishProperty,
-  getMyProperties,
-  getPropertyById,
-  listProperties,
-  updateProperty,
-  deleteProperty,
-  searchNearbyProperties
-};
+export default { publishProperty, getMyProperties, getPropertyById, listProperties, updateProperty, deleteProperty, searchNearbyProperties };

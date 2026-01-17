@@ -1,4 +1,5 @@
-const {formatDate, formatTime} = require("../utils/dateFormatters");
+
+import {formatDate, formatTime} from '../utils/dateFormatters.js';
 
 module.exports = (sequelize, Sequelize) => {
     const ListingView = sequelize.define("listing_view", {

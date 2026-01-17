@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import ListingLeadController from '../controller/ListingLead.controller.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const ListingLeadController = require('../controller/ListingLead.controller');
-const { authenticateToken } = require('../middleware/authMiddleware');
 
 /**
  * @route   POST /api/leads
@@ -52,4 +53,4 @@ router.put('/:leadId/status', authenticateToken, ListingLeadController.updateLea
  */
 router.delete('/:leadId', authenticateToken, ListingLeadController.deleteLead);
 
-module.exports = router;
+export default router;

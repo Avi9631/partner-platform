@@ -1,10 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const logger = require('../config/winston.config');
 
 /**
  * Service for fetching developer data from JSON file
  */
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import logger from '../config/winston.config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 class DeveloperConsumerApiService {
   constructor() {
     this.dataPath = path.join(__dirname, 'developer-api-response.json');
@@ -150,4 +155,4 @@ class DeveloperConsumerApiService {
 }
 
 // Export singleton instance
-module.exports = new DeveloperConsumerApiService();
+export default new DeveloperConsumerApiService();

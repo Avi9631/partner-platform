@@ -1,8 +1,9 @@
-const express = require("express");
+import express from 'express';
+import UserController from '../controller/User.controller.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+import { uploadProfileVideo, uploadOwnerVideo, handleUploadError } from '../middleware/uploadMiddleware.js';
+
 const router = express.Router();
-const UserController = require("../controller/User.controller.js");
-const { authenticateToken } = require("../middleware/authMiddleware");
-const { uploadProfileVideo, uploadOwnerVideo, handleUploadError } = require("../middleware/uploadMiddleware");
 
 // Get current authenticated user
 router.post("/partnerUser/get", authenticateToken, UserController.getUser);
@@ -59,4 +60,4 @@ router.patch("/partnerUser/approveVerification", authenticateToken, UserControll
 // Reject user verification (admin function - consider adding admin middleware)
 router.patch("/partnerUser/rejectVerification", authenticateToken, UserController.rejectVerification);
 
-module.exports = router;
+export default router;

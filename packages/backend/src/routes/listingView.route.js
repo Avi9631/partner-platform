@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import ListingViewController from '../controller/ListingView.controller.js';
+import { authenticateToken, optionalAuthenticateToken } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const ListingViewController = require('../controller/ListingView.controller');
-const { authenticateToken, optionalAuthenticateToken } = require('../middleware/authMiddleware');
 
 /**
  * @route   POST /api/listing-analytics
@@ -52,4 +53,4 @@ router.get('/trending/:listingType', ListingViewController.getTrendingListings);
  */
 router.get('/analytics', authenticateToken, ListingViewController.getViewAnalytics);
 
-module.exports = router;
+export default router;

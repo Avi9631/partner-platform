@@ -1,7 +1,8 @@
 // authMiddleware.js
-const jwt = require("jsonwebtoken");
-const _ = require("lodash");
-const logger = require('../config/winston.config')
+
+import jwt from 'jsonwebtoken';
+import _ from 'lodash';
+import logger from '../config/winston.config.js';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
@@ -66,4 +67,4 @@ const optionalAuthenticateToken = (req, res, next) => {
 
 
 
-module.exports = { authenticateToken, optionalAuthenticateToken };
+export { authenticateToken, optionalAuthenticateToken };

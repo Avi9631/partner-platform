@@ -1,6 +1,7 @@
-const db = require("../entity");
+import db from '../entity/index.js';
+import { Op } from 'sequelize';
+
 const ListingAnalytics = db.ListingAnalytics;
-const { Op } = require("sequelize");
 
 /**
  * Record a new listing view
@@ -553,13 +554,4 @@ const getComprehensiveAnalytics = async (listingType, listingId, timeRange = '7d
   }
 };
 
-module.exports = {
-  recordView,
-  updateViewDuration,
-  getListingViewStats,
-  getViewerHistory,
-  getTrendingListings,
-  getViewAnalytics,
-  cleanupOldViews,
-  getComprehensiveAnalytics,
-};
+export default { recordView, updateViewDuration, getListingViewStats, getViewerHistory, getTrendingListings, getViewAnalytics, cleanupOldViews, getComprehensiveAnalytics };

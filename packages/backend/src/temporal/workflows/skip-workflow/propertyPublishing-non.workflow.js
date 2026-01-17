@@ -8,12 +8,13 @@
  * 
  * @module temporal/workflows/propertyPublishing-non.workflow
  */
-const logger = require('../../../config/winston.config');
 
 // Import Property specific activities
-const propertyActivities = require('../../activities/propertyPublishing.activities');
 
 // Combine all activities into a single object
+import logger from '../../../config/winston.config.js';
+import propertyActivities from '../../activities/propertyPublishing.activities.js';
+
 const activities = {
     ...propertyActivities,
     // Add more activity imports here if needed
@@ -174,4 +175,4 @@ async function propertyPublishing(workflowInput) {
     }
 }
 
-module.exports = { propertyPublishing };
+export { propertyPublishing };

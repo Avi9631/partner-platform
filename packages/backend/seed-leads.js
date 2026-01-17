@@ -1,5 +1,6 @@
+import db from './src/entity.js';
+
 require('dotenv').config();
-const db = require('./src/entity');
 
 async function seedListingLeads() {
   try {

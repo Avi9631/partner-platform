@@ -1,8 +1,9 @@
-const PgColiveHostelService = require("../service/PgColiveHostelService.service");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const { runWorkflowAsync, runWorkflowDirect, WORKFLOWS } = require("../temporal/utils/workflowHelper");
-const logger = require("../config/winston.config");
-const db = require("../entity");
+import PgColiveHostelService from '../service/PgColiveHostelService.service.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
+import logger from '../config/winston.config.js';
+import db from '../entity/index.js';
+
 const ListingDraft = db.ListingDraft;
 const PgColiveHostel = db.PgColiveHostel;
 
@@ -398,13 +399,4 @@ const deletePgHostel = async (req, res) => {
   }
 };
 
-module.exports = {
-  publishPgColiveHostel,
-  getMyPgHostelProfiles,
-  listPgHostels,
-  searchNearbyPgHostels,
-  getPgHostelBySlug,
-  getPgHostelById,
-  updatePgHostel,
-  deletePgHostel
-};
+export default { publishPgColiveHostel, getMyPgHostelProfiles, listPgHostels, searchNearbyPgHostels, getPgHostelBySlug, getPgHostelById, updatePgHostel, deletePgHostel };

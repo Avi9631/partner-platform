@@ -1,5 +1,6 @@
-const db = require("../entity/index.js");
-const logger = require("../config/winston.config.js");
+
+import db from '../entity/index.js';
+import logger from '../config/winston.config.js';
 
 const getInitials = (name) => {
   const trimmedName = name.trim();
@@ -312,7 +313,7 @@ function getAccountType(user) {
     : 'INDIVIDUAL';
 }
 
-module.exports = {
+export default {
   getUser,
   updateUser,
   verifyPhone,

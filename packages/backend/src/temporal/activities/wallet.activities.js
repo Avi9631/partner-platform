@@ -8,11 +8,12 @@
  * @module temporal/activities/wallet
  */
 
-const db = require("../../entity");
+import db from '../../entity/index.js';
+import { Op } from 'sequelize';
+import logger from '../../config/winston.config.js';
+
 const WalletTransaction = db.WalletTransaction;
 const PlatformUser = db.PlatformUser;
-const { Op } = require("sequelize");
-const logger = require("../../config/winston.config");
 
 /**
  * Activity: Credit to Wallet
@@ -332,9 +333,4 @@ async function getCurrentBalance(userId) {
   return latestTransaction ? latestTransaction.balanceAfter : 0;
 }
 
-module.exports = {
-  creditToWallet,
-  debitFromWallet,
-  getWalletBalance,
-  getWalletTransactions
-};
+export default { creditToWallet, debitFromWallet, getWalletBalance, getWalletTransactions };

@@ -1,6 +1,7 @@
-const { Op } = require("sequelize");
-const db = require("../entity");
-const logger = require("../config/winston.config");
+import { Op } from 'sequelize';
+import db from '../entity/index.js';
+import logger from '../config/winston.config.js';
+
 const ListingDraft = db.ListingDraft;
 const Property = db.Property;
 const Project = db.Project;
@@ -299,11 +300,11 @@ const submitDraft = async (draftId, userId) => {
   }
 };
 
-module.exports = {
+export default {
   createDraft,
   updateDraft,
   getDraftById,
   getUserDrafts,
   deleteDraft,
-  submitDraft
+  submitDraft,
 };

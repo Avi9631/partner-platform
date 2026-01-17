@@ -8,12 +8,13 @@
  * 
  * @module temporal/workflows/projectPublishing-non.workflow
  */
-const logger = require('../../../config/winston.config');
 
 // Import Project specific activities
-const projectActivities = require('../../activities/projectPublishing.activities');
 
 // Combine all activities into a single object
+import logger from '../../../config/winston.config.js';
+import projectActivities from '../../activities/projectPublishing.activities.js';
+
 const activities = {
     ...projectActivities,
     // Add more activity imports here if needed
@@ -154,4 +155,4 @@ async function projectPublishing(workflowInput) {
     }
 }
 
-module.exports = { projectPublishing };
+export { projectPublishing };

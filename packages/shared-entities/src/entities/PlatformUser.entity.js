@@ -1,0 +1,127 @@
+import {formatDate, formatTime} from '../utils/dateFormatters.js';
+export default (sequelize, Sequelize) => {
+    const PlatformUser = sequelize.define("platform_user", {
+      userId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        field: "user_id",
+      },
+      firstName: {
+        type: Sequelize.STRING(50),
+        field: "user_first_name"
+      },
+      lastName: {
+        type: Sequelize.STRING(50),
+        field: "user_last_name"
+      },
+      nameInitial: {
+        type: Sequelize.STRING(2),
+        field: "user_name_initial",
+      },
+      email: {
+        type: Sequelize.STRING(60),
+        field: "user_email", 
+        unique: true,
+        allowNull: false
+      },
+      phone: {
+        type: Sequelize.STRING(15),
+        field: "user_phone"
+      }, 
+      lastLoginAt: {
+        type: Sequelize.DATE,
+        field: "user_last_login_at",
+      }, 
+      latitude: {
+        type: Sequelize.DECIMAL(10, 8),
+        field: "user_latitude",
+      },
+      longitude: {
+        type: Sequelize.DECIMAL(11, 8),
+        field: "user_longitude",
+      },
+      address: {
+        type: Sequelize.TEXT,
+        field: "user_address",
+      },
+      profileVideo: {
+        type: Sequelize.STRING(500),
+        field: "user_profile_video",
+      },
+      verificationStatus: {
+        type: Sequelize.ENUM('PENDING', 'AUTOMATED_REVIEW' , 'MANUAL_REVIEW' ,  'APPROVED', 'REJECTED'),
+        field: "verification_status",
+        defaultValue: null,
+      },
+      verificationNotes: {
+        type: Sequelize.TEXT,
+        field: "verification_notes",
+      },
+      verifiedAt: {
+        type: Sequelize.DATE,
+        field: "verified_at",
+      },
+      verifiedBy: {
+        type: Sequelize.INTEGER,
+        field: "verified_by",
+      },
+      derivedUserName: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          if (!this.firstName && !this.lastName) return null;
+
+          return `${this.firstName} ${this.lastName} `; // Format: dd-MMM-YYYY
+        },
+      },
+
+      created_date: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return formatDate(this.user_created_at)
+
+        },
+      },
+      v_created_time: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return formatTime(this.user_created_at)
+
+        },
+      },
+
+      v_updated_date: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return formatDate(this.user_updated_at)
+
+        },
+      },
+      v_updated_time: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return formatTime(this.user_updated_at)
+
+        },
+      },
+    } , {
+      timestamps: true,
+      createdAt: "user_created_at",
+      updatedAt: "user_updated_at",
+      deletedAt: "user_deleted_at",
+      // paranoid: true,
+      indexes: [
+        {
+          fields: ['user_first_name', 'user_last_name']
+        },
+        {
+          fields: ['user_email']
+        }, 
+        {
+          fields: ['verification_status']
+        }
+      ],
+    });
+    return PlatformUser;
+  };
+

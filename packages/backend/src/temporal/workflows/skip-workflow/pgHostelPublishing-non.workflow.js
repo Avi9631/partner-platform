@@ -8,12 +8,13 @@
  * 
  * @module temporal/workflows/pgHostelPublishing-non.workflow
  */
-const logger = require('../../../config/winston.config');
 
 // Import PG/Hostel specific activities
-const pgHostelActivities = require('../../activities/pgHostelPublishing.activities');
 
 // Combine all activities into a single object
+import logger from '../../../config/winston.config.js';
+import pgHostelActivities from '../../activities/pgHostelPublishing.activities.js';
+
 const activities = {
     ...pgHostelActivities,
     // Add more activity imports here if needed
@@ -198,4 +199,4 @@ async function pgHostelPublishing(workflowInput) {
 }
 
 
-module.exports = { pgHostelPublishing };
+export { pgHostelPublishing };

@@ -7,13 +7,15 @@
  * @module temporal/activities/propertyPublishing.activities
  */
 
-const PropertyService = require("../../service/PropertyService.service");
-const { debitFromWallet, getWalletBalance } = require("./wallet.activities");
- const db = require("../../entity");
+import PropertyService from '../../service/PropertyService.service.js';
+import walletActivities from './wallet.activities.js';
+const { debitFromWallet, getWalletBalance } = walletActivities;
+import db from '../../entity/index.js';
+import logger from '../../config/winston.config.js';
+
 const Property = db.Property;
 const PlatformUser = db.PlatformUser;
 const ListingDraft = db.ListingDraft;
-const logger = require("../../config/winston.config");
 
 /**
  * Fetch property data from ListingDraft entity and transform it
@@ -620,13 +622,4 @@ async function deductPublishingCredits({ userId, propertyId, amount = 10 }) {
   }
 }
 
-module.exports = {
-  fetchListingDraftData,
-  transformPropertyDraftData,
-  validatePropertyData,
-  createPropertyRecord,
-  updatePropertyRecord,
-  sendPropertyPublishingNotification,
-  updateListingDraftStatus,
-  deductPublishingCredits,
-};
+export default { fetchListingDraftData, transformPropertyDraftData, validatePropertyData, createPropertyRecord, updatePropertyRecord, sendPropertyPublishingNotification, updateListingDraftStatus, deductPublishingCredits };

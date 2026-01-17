@@ -1,13 +1,14 @@
-const logger = require("../config/winston.config.js");
-const UserService = require("../service/UserService.service.js");
-const PartnerBusinessService = require("../service/PartnerBusiness.service.js");
-const { ApiResponse } = require("../utils/responseFormatter.js");
-const { runWorkflowAsync, runWorkflowDirect, WORKFLOWS } = require("../temporal/utils/workflowHelper.js");
 
 /**
  * Get user by userId (from authenticated request)
  * @route POST /partnerUser/get
  */
+import logger from '../config/winston.config.js';
+import UserService from '../service/UserService.service.js';
+import PartnerBusinessService from '../service/PartnerBusiness.service.js';
+import { ApiResponse } from '../utils/responseFormatter.js';
+import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
+
 async function getUser(req, res, next) {
   const apiResponse = new ApiResponse(req, res);
 
@@ -908,15 +909,4 @@ async function rejectVerification(req, res, next) {
   }
 }
 
-module.exports = {
-  getUser,
-  updateUser,
-  updateBusinessProfile,
-  onboardUser,
-  onboardBusinessPartner,
-  verifyPhone,
-  getAllUsers,
-  updateUserStatus,
-  approveVerification,
-  rejectVerification,
-};
+export default { getUser, updateUser, updateBusinessProfile, onboardUser, onboardBusinessPartner, verifyPhone, getAllUsers, updateUserStatus, approveVerification, rejectVerification };

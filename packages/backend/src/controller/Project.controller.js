@@ -1,8 +1,9 @@
-const ProjectService = require("../service/ProjectService.service");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const { runWorkflowAsync, runWorkflowDirect, WORKFLOWS } = require("../temporal/utils/workflowHelper");
-const logger = require("../config/winston.config");
-const db = require("../entity");
+import ProjectService from '../service/ProjectService.service.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
+import logger from '../config/winston.config.js';
+import db from '../entity/index.js';
+
 const ListingDraft = db.ListingDraft;
 const Project = db.Project;
 
@@ -346,12 +347,4 @@ const searchNearbyProjects = async (req, res) => {
   }
 };
 
-module.exports = {
-  publishProject,
-  getMyProjects,
-  listProjects,
-  getProjectById,
-  updateProject,
-  deleteProject,
-  searchNearbyProjects
-};
+export default { publishProject, getMyProjects, listProjects, getProjectById, updateProject, deleteProject, searchNearbyProjects };

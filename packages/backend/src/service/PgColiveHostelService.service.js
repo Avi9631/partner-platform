@@ -1,8 +1,9 @@
-const db = require("../entity");
-const logger = require("../config/winston.config");
+import db from '../entity/index.js';
+import logger from '../config/winston.config.js';
+import { Op } from 'sequelize';
+
 const PgColiveHostel = db.PgColiveHostel;
 const PlatformUser = db.PlatformUser;
-const { Op } = require("sequelize");
 
 /**
  * Create slug from property name
@@ -503,13 +504,4 @@ const deletePgColiveHostel = async (pgHostelId, userId) => {
   }
 };
 
-module.exports = {
-  createPgColiveHostel,
-  updatePgColiveHostel,
-  getPgColiveHostelById,
-  getPgColiveHostelBySlug,
-  listPgColiveHostels,
-  searchNearbyPgHostels,
-  getUserPgColiveHostels,
-  deletePgColiveHostel
-};
+export default { createPgColiveHostel, updatePgColiveHostel, getPgColiveHostelById, getPgColiveHostelBySlug, listPgColiveHostels, searchNearbyPgHostels, getUserPgColiveHostels, deletePgColiveHostel };

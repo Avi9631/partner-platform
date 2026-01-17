@@ -1,7 +1,8 @@
-const express = require("express");
+import express from 'express';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+import UploadController from '../controller/Upload.controller.js';
+
 const router = express.Router();
-const { authenticateToken } = require("../middleware/authMiddleware");
-const UploadController = require("../controller/Upload.controller");
 
 // Health check
 router.get("/ping", function (req, res) {
@@ -22,4 +23,4 @@ router.get("/ping", function (req, res) {
  */
 router.post("/presigned-urls", authenticateToken, UploadController.getPresignedUrls);
 
-module.exports = router;
+export default router;

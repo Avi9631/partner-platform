@@ -1,7 +1,8 @@
-const express = require("express");
+import express from 'express';
+import PropertyController from '../controller/Property.controller.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const PropertyController = require("../controller/Property.controller.js");
-const { authenticateToken } = require("../middleware/authMiddleware");
 
 /**
  * @route   POST /api/property/publishProperty
@@ -58,4 +59,4 @@ router.delete(
   PropertyController.deleteProperty
 );
 
-module.exports = router;
+export default router;

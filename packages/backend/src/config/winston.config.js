@@ -1,10 +1,11 @@
-const winston = require('winston');
-const { trace, context } = require('@opentelemetry/api');
 
 /**
  * Custom Winston format that automatically injects OpenTelemetry trace context
  * This extracts traceId and spanId from the active span without manual passing
  */
+import winston from 'winston';
+import { trace, context } from '@opentelemetry/api';
+
 const traceFormat = winston.format((info) => {
   // Get the active span from OpenTelemetry context
   const span = trace.getActiveSpan();
@@ -81,4 +82,4 @@ const logger = winston.createLogger({
   ],
 });
 
-module.exports = logger;
+export default logger;

@@ -1,40 +1,48 @@
 // ============================================================================
-// CRITICAL: OpenTelemetry tracing MUST be initialized FIRST
+// CRITICAL: Dotenv and OpenTelemetry tracing MUST be initialized FIRST
 // This must come before any other imports to properly instrument all modules
 // ============================================================================
-require('./src/config/tracing');
+import 'dotenv/config';
 
-require("dotenv").config();
+import dns from 'dns';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const dns = require("dns");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import authRoute from './src/routes/auth.route.js';
+import draftRoute from './src/routes/draft.route.js';
+import userRoute from './src/routes/user.route.js';
+import developerRoute from './src/routes/developer.route.js';
+import developerConsumerApiRoute from './src/routes/developer-consumer-api.route.js';
+import pgHostelRoute from './src/routes/pgHostel.route.js';
+import propertyRoute from './src/routes/property.route.js';
+import projectRoute from './src/routes/project.route.js';
+import uploadRoute from './src/routes/upload.route.js';
+import otpAuthRoute from './src/routes/otpAuth.route.js';
+import walletRoute from './src/routes/wallet.route.js';
+import leadRoute from './src/routes/lead.route.js';
+import listingViewRoute from './src/routes/listingView.route.js';
+import logger from './src/config/winston.config.js';
+import db from './src/entity/index.js';
+import bodyParser from 'body-parser';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { shutdown as shutdownTracing } from './src/config/tracing.js';
+// import { closeQueue } from './src/queues/emailQueue.js'; // TODO: File doesn't exist yet
+import { closeRedisConnection } from './src/config/redis.config.js';
+
+import './src/config/tracing.js';
+
 dns.setDefaultResultOrder("ipv4first");
 
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const express = require("express");
-const path = require("path");
-const authRoute = require("./src/routes/auth.route.js");
-const draftRoute = require("./src/routes/draft.route.js");
-const userRoute = require("./src/routes/user.route.js");
-const developerRoute = require("./src/routes/developer.route.js");
-const developerConsumerApiRoute = require("./src/routes/developer-consumer-api.route.js");
-const pgHostelRoute = require("./src/routes/pgHostel.route.js");
-const propertyRoute = require("./src/routes/property.route.js");
-const projectRoute = require("./src/routes/project.route.js");
- const uploadRoute = require("./src/routes/upload.route.js");
-const otpAuthRoute = require("./src/routes/otpAuth.route.js");
-const walletRoute = require("./src/routes/wallet.route.js");
-const leadRoute = require("./src/routes/lead.route.js");
-const listingViewRoute = require("./src/routes/listingView.route.js");
-const logger = require("./src/config/winston.config.js");
 const app = express();
 const port = process.env.PORT || 3000;
-const db = require("./src/entity");
-const bodyParser = require("body-parser");
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
-require("./google_oauth.js");
-require("./microsoft_oauth.js");
+import './google_oauth.js';
+import './microsoft_oauth.js';
 
 const swaggerOptions = {
   definition: {
@@ -152,7 +160,6 @@ const gracefulShutdown = async (signal) => {
 
     // 2. Shutdown OpenTelemetry SDK (flush remaining traces)
     logger.info("Shutting down OpenTelemetry SDK...");
-    const { shutdown: shutdownTracing } = require('./src/config/tracing');
     await shutdownTracing();
     logger.info("OpenTelemetry SDK shut down");
 
@@ -164,14 +171,12 @@ const gracefulShutdown = async (signal) => {
 
     // 4. Close BullMQ queue
     logger.info("Closing email queue...");
-    const { closeQueue } = require("./src/queues/emailQueue");
-    await closeQueue();
+    // await closeQueue(); // TODO: Uncomment when emailQueue.js is implemented
     logger.info("Email queue closed");
     logger.info("Email queue closed");
 
     // 5. Close Redis connection
     logger.info("Closing Redis connection...");
-    const { closeRedisConnection } = require("./src/config/redis.config");
     await closeRedisConnection();
     logger.info("Redis connection closed");
     logger.info("Redis connection closed");

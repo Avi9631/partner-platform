@@ -1,6 +1,3 @@
-const DeveloperConsumerApiService = require("../service/DeveloperConsumerApiService.service");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const logger = require("../config/winston.config");
 
 /**
  * Get developers with pagination
@@ -8,6 +5,10 @@ const logger = require("../config/winston.config");
  * @query page - Page number (default: 1)
  * @query limit - Items per page (default: 10)
  */
+import DeveloperConsumerApiService from '../service/DeveloperConsumerApiService.service.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import logger from '../config/winston.config.js';
+
 const getDevelopersByPagination = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -158,9 +159,4 @@ const getMetadata = async (req, res) => {
   }
 };
 
-module.exports = {
-  getDevelopersByPagination,
-  searchDevelopersByName,
-  getDeveloperById,
-  getMetadata
-};
+export default { getDevelopersByPagination, searchDevelopersByName, getDeveloperById, getMetadata };

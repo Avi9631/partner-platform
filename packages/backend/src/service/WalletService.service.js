@@ -1,8 +1,9 @@
-const db = require("../entity");
+import db from '../entity/index.js';
+import { Op } from 'sequelize';
+import logger from '../config/winston.config.js';
+
 const WalletTransaction = db.WalletTransaction;
 const PlatformUser = db.PlatformUser;
-const { Op } = require("sequelize");
-const logger = require("../config/winston.config");
 
 /**
  * Get user's current wallet balance
@@ -356,11 +357,4 @@ const getWalletStats = async (userId) => {
   }
 };
 
-module.exports = {
-  getWalletBalance,
-  addFunds,
-  deductFunds,
-  getTransactionHistory,
-  checkSufficientFunds,
-  getWalletStats
-};
+export default { getWalletBalance, addFunds, deductFunds, getTransactionHistory, checkSufficientFunds, getWalletStats };

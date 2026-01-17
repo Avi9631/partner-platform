@@ -1,7 +1,8 @@
-const express = require("express");
+import express from 'express';
+import DeveloperController from '../controller/Developer.controller.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const DeveloperController = require("../controller/Developer.controller.js");
-const { authenticateToken } = require("../middleware/authMiddleware");
 
 /**
  * @route   POST /api/developer/publishDeveloper
@@ -47,4 +48,4 @@ router.delete(
   DeveloperController.deleteDeveloper
 );
 
-module.exports = router;
+export default router;

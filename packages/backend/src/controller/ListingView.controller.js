@@ -1,3 +1,6 @@
+import { sendSuccessResponse, sendErrorResponse } from '../utils/responseFormatter.js';
+
+import ListingViewService from '../service/ListingViewService.service.js';
 const {
   recordView,
   updateViewDuration,
@@ -6,8 +9,7 @@ const {
   getTrendingListings,
   getViewAnalytics,
   getComprehensiveAnalytics,
-} = require("../service/ListingViewService.service");
-const { sendSuccessResponse, sendErrorResponse } = require("../utils/responseFormatter");
+} = ListingViewService;
 
 /**
  * Record a new listing view
@@ -223,7 +225,7 @@ const getComprehensiveAnalyticsHandler = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   recordView: recordViewHandler,
   updateViewDuration: updateViewDurationHandler,
   getListingViewStats: getListingViewStatsHandler,

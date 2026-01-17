@@ -1,3 +1,4 @@
+import ListingLeadService from '../service/ListingLeadService.service.js';
 const {
   createLead,
   getLeads,
@@ -7,11 +8,12 @@ const {
   getLeadStats,
   deleteLead,
   getLeadsForListing,
-} = require("../service/ListingLeadService.service");
-const {
+} = ListingLeadService;
+
+import {
   sendSuccessResponse,
   sendErrorResponse,
-} = require("../utils/responseFormatter");
+} from '../utils/responseFormatter.js';
 
 /**
  * Create a new lead
@@ -302,7 +304,7 @@ const getLeadsForListingHandler = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   createLead: createLeadHandler,
   getLeads: getLeadsHandler,
   getLeadById: getLeadByIdHandler,

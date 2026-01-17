@@ -8,12 +8,13 @@
  * 
  * @module temporal/workflows/partnerOnboarding-non.workflow
  */
-const logger = require('../../../config/winston.config');
 
 // Import Partner Onboarding specific activities
-const partnerOnboardingActivities = require('../../activities/partnerOnboarding.activities');
 
 // Combine all activities into a single object
+import logger from '../../../config/winston.config.js';
+import partnerOnboardingActivities from '../../activities/partnerOnboarding.activities.js';
+
 const activities = {
     ...partnerOnboardingActivities,
     // Add more activity imports here if needed
@@ -163,4 +164,4 @@ async function partnerUserOnboarding(workflowInput) {
     }
 }
 
-module.exports = { partnerUserOnboarding };
+export { partnerUserOnboarding };

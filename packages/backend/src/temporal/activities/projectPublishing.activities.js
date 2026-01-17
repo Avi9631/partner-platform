@@ -7,13 +7,15 @@
  * @module temporal/activities/projectPublishing.activities
  */
 
-const ProjectService = require("../../service/ProjectService.service");
-const { debitFromWallet, getWalletBalance } = require("./wallet.activities");
-const db = require("../../entity");
+import ProjectService from '../../service/ProjectService.service.js';
+import walletActivities from './wallet.activities.js';
+const { debitFromWallet, getWalletBalance } = walletActivities;
+import db from '../../entity/index.js';
+import logger from '../../config/winston.config.js';
+
 const Project = db.Project;
 const PlatformUser = db.PlatformUser;
 const ListingDraft = db.ListingDraft;
-const logger = require("../../config/winston.config");
 
 /**
  * Validate project data before publishing
@@ -353,11 +355,4 @@ async function deductPublishingCredits({ userId, projectId, amount = 10 }) {
   }
 }
 
-module.exports = {
-  validateProjectData,
-  createProjectRecord,
-  updateProjectRecord,
-  sendProjectPublishingNotification,
-  updateListingDraftStatus,
-  deductPublishingCredits,
-};
+export default { validateProjectData, createProjectRecord, updateProjectRecord, sendProjectPublishingNotification, updateListingDraftStatus, deductPublishingCredits };

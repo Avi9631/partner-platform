@@ -1,8 +1,9 @@
-const db = require("../entity");
+import db from '../entity/index.js';
+import { Op } from 'sequelize';
+import logger from '../config/winston.config.js';
+
 const Project = db.Project;
 const PlatformUser = db.PlatformUser;
-const { Op } = require("sequelize");
-const logger = require("../config/winston.config");
 
 /**
  * Create a new project record from draft data
@@ -569,12 +570,4 @@ const searchNearbyProjects = async (latitude, longitude, radiusKm, filters = {})
   }
 };
 
-module.exports = {
-  createProject,
-  updateProject,
-  getProjectById,
-  listProjects,
-  getMyProjects,
-  deleteProject,
-  searchNearbyProjects
-};
+export default { createProject, updateProject, getProjectById, listProjects, getMyProjects, deleteProject, searchNearbyProjects };

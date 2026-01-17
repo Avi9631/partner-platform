@@ -8,24 +8,16 @@
  */
 
 // User activities
-const userActivities = require('./user.activities');
-const partnerOnboardingActivities = require('./partnerOnboarding.activities');
-const partnerBusinessOnboardingActivities = require('./partnerBusinessOnboarding.activities');
 
 // Wallet activities
-const walletActivities = require('./wallet.activities');
 
 // Developer activities
-const developerPublishingActivities = require('./developerPublishing.activities');
 
 // PG/Colive/Hostel activities
-const pgHostelPublishingActivities = require('./pgHostelPublishing.activities');
 
 // Property activities
-const propertyPublishingActivities = require('./propertyPublishing.activities');
 
 // Project activities
-const projectPublishingActivities = require('./projectPublishing.activities');
 
  
 /**
@@ -35,29 +27,21 @@ const projectPublishingActivities = require('./projectPublishing.activities');
  * with the Temporal worker. Activities are namespaced by their domain
  * in separate files but exported together for worker configuration.
  */
-module.exports = {
-    // User activities
-    ...userActivities,
-    
-    // Partner onboarding activities
-    ...partnerOnboardingActivities,
-    
-    // Partner business onboarding activities
-    ...partnerBusinessOnboardingActivities,
-    
-    // Wallet activities
-    ...walletActivities,
-    
-    // Developer publishing activities
-    ...developerPublishingActivities,
-    
-    // PG/Colive/Hostel publishing activities
-    ...pgHostelPublishingActivities,
-    
-    // Property publishing activities
-    ...propertyPublishingActivities,
-    
-    // Project publishing activities
-    ...projectPublishingActivities,
- 
-};
+import userActivities from './user.activities.js';
+import partnerOnboardingActivities from './partnerOnboarding.activities.js';
+import partnerBusinessOnboardingActivities from './partnerBusinessOnboarding.activities.js';
+import walletActivities from './wallet.activities.js';
+import developerPublishingActivities from './developerPublishing.activities.js';
+import pgHostelPublishingActivities from './pgHostelPublishing.activities.js';
+import propertyPublishingActivities from './propertyPublishing.activities.js';
+import projectPublishingActivities from './projectPublishing.activities.js';
+
+export { // User activities
+    ...userActivities, // Partner onboarding activities
+    ...partnerOnboardingActivities, // Partner business onboarding activities
+    ...partnerBusinessOnboardingActivities, // Wallet activities
+    ...walletActivities, // Developer publishing activities
+    ...developerPublishingActivities, // PG/Colive/Hostel publishing activities
+    ...pgHostelPublishingActivities, // Property publishing activities
+    ...propertyPublishingActivities, // Project publishing activities
+    ...projectPublishingActivities };

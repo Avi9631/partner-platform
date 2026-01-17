@@ -1,4 +1,5 @@
-const { formatDate, formatTime } = require("../utils/dateFormatters");
+
+import { formatDate, formatTime } from '../utils/dateFormatters.js';
 
 module.exports = (sequelize, Sequelize) => {
   const PgColiveHostel = sequelize.define("pg_colive_hostel", {

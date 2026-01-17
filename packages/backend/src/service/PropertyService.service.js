@@ -1,8 +1,9 @@
-const db = require("../entity");
+import db from '../entity/index.js';
+import { Op } from 'sequelize';
+import logger from '../config/winston.config.js';
+
 const Property = db.Property;
 const PlatformUser = db.PlatformUser;
-const { Op } = require("sequelize");
-const logger = require("../config/winston.config");
 
 /**
  * Validate and format date field
@@ -697,12 +698,4 @@ const searchNearbyProperties = async (latitude, longitude, radiusKm, filters = {
   }
 };
 
-module.exports = {
-  createProperty,
-  updateProperty,
-  getPropertyById,
-  getUserProperties,
-  listProperties,
-  deleteProperty,
-  searchNearbyProperties
-};
+export default { createProperty, updateProperty, getPropertyById, getUserProperties, listProperties, deleteProperty, searchNearbyProperties };

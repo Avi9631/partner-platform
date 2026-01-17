@@ -7,12 +7,13 @@
  * @version 2.0
  */
 
-const { randomUUID } = require('crypto');
  
 /**
  * ApiResponse Class
  * Handles all API response generation with a fluent interface
  */
+import { randomUUID } from 'crypto';
+
 class ApiResponse {
   /**
    * Create an ApiResponse instance
@@ -219,34 +220,31 @@ function requestIdMiddleware(req, res, next) {
   next();
 }
 
-module.exports = {
-  ApiResponse,
-  requestIdMiddleware,
-  
-  // Helper functions for backward compatibility
-  sendSuccessResponse: (res, data = null, message = 'Success', statusCode = 200) => {
-    return res.status(statusCode).json({
-      status: statusCode,
-      success: true,
-      message: message,
-      data: data,
-      warnings: [],
-      error: null
-    });
-  },
+export { ApiResponse, requestIdMiddleware };
 
-  sendErrorResponse: (res, message = 'An error occurred', statusCode = 500, errorCode = null, details = null) => {
-    return res.status(statusCode).json({
-      status: statusCode,
-      success: false,
+// Helper functions for backward compatibility
+export const sendSuccessResponse = (res, data = null, message = 'Success', statusCode = 200) => {
+  return res.status(statusCode).json({
+    status: statusCode,
+    success: true,
+    message: message,
+    data: data,
+    warnings: [],
+    error: null
+  });
+};
+
+export const sendErrorResponse = (res, message = 'An error occurred', statusCode = 500, errorCode = null, details = null) => {
+  return res.status(statusCode).json({
+    status: statusCode,
+    success: false,
+    message: message,
+    data: null,
+    warnings: [],
+    error: {
+      code: errorCode || `ERROR_${statusCode}`,
       message: message,
-      data: null,
-      warnings: [],
-      error: {
-        code: errorCode || `ERROR_${statusCode}`,
-        message: message,
-        ...(details && { details })
-      }
-    });
-  }
+      ...(details && { details })
+    }
+  });
 };

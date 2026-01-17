@@ -1,12 +1,13 @@
-const ListingDraftService = require("../service/ListingDraftService.service");
-const { sendErrorResponse, sendSuccessResponse } = require("../utils/responseFormatter");
-const { uploadMultipleToS3 } = require("../utils/s3Upload");
-const logger = require("../config/winston.config");
 
 /**
  * Create a new listing draft
  * POST /api/draft/createListingDraft
  */
+import ListingDraftService from '../service/ListingDraftService.service.js';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
+import { uploadMultipleToS3 } from '../utils/s3Upload.js';
+import logger from '../config/winston.config.js';
+
 const createListingDraft = async (req, res) => {
   try {
     const userId = req.user.userId; // From auth middleware
@@ -156,11 +157,4 @@ const submitListingDraft = async (req, res) => {
   }
 };
 
-module.exports = {
-  createListingDraft,
-  updateListingDraft,
-  getListingDraftById,
-  getUserListingDrafts,
-  deleteListingDraft,
-  submitListingDraft
-};
+export default { createListingDraft, updateListingDraft, getListingDraftById, getUserListingDrafts, deleteListingDraft, submitListingDraft };

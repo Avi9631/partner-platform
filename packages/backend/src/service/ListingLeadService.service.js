@@ -1,6 +1,7 @@
-const db = require("../entity");
+import db from '../entity/index.js';
+import { Op } from 'sequelize';
+
 const ListingLead = db.ListingLead;
-const { Op } = require("sequelize");
 
 /**
  * Create a new lead
@@ -373,13 +374,4 @@ const getLeadsForListing = async (listingType, listingId, options = {}) => {
   }
 };
 
-module.exports = {
-  createLead,
-  getLeads,
-  getLeadById,
-  updateLeadStatus,
-  updateLead,
-  getLeadStats,
-  deleteLead,
-  getLeadsForListing,
-};
+export default { createLead, getLeads, getLeadById, updateLeadStatus, updateLead, getLeadStats, deleteLead, getLeadsForListing };

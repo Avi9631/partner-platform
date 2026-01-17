@@ -1,7 +1,8 @@
-const express = require("express");
+import express from 'express';
+import WalletController from '../controller/Wallet.controller.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const WalletController = require("../controller/Wallet.controller.js");
-const { authenticateToken } = require("../middleware/authMiddleware");
 
 /**
  * @route   GET /api/wallet/balance
@@ -73,4 +74,4 @@ router.post(
   WalletController.checkSufficientFunds
 );
 
-module.exports = router;
+export default router;

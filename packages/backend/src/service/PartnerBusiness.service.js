@@ -1,5 +1,3 @@
-const db = require("../entity/index.js");
-const logger = require("../config/winston.config.js");
 
 /**
  * Create or update partner business information
@@ -7,6 +5,9 @@ const logger = require("../config/winston.config.js");
  * @param {Object} businessData - Business data
  * @returns {Promise<Object>} Business record
  */
+import db from '../entity/index.js';
+import logger from '../config/winston.config.js';
+
 async function createOrUpdateBusiness(userId, businessData) {
   try {
     // Check if business already exists for this user
@@ -214,11 +215,4 @@ async function deleteBusiness(businessId) {
   }
 }
 
-module.exports = {
-  createOrUpdateBusiness,
-  getBusinessByUserId,
-  getBusinessById,
-  updateVerificationStatus,
-  getAllBusinesses,
-  deleteBusiness,
-};
+export default { createOrUpdateBusiness, getBusinessByUserId, getBusinessById, updateVerificationStatus, getAllBusinesses, deleteBusiness };

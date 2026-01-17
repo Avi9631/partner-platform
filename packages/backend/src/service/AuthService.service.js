@@ -1,5 +1,6 @@
-const db = require("../entity/index.js");
-const logger = require("../config/winston.config.js");
+
+import db from '../entity/index.js';
+import logger from '../config/winston.config.js';
 
 const getInitials = (name) => {
   const trimmedName = name.trim();
@@ -72,7 +73,7 @@ async function findUser(email, userId) {
 
  
  
-module.exports = {
+export default {
   findUser,
-   createUser,
- };
+  createUser,
+};

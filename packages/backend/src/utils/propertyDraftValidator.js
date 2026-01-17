@@ -6,12 +6,13 @@
  * @module utils/propertyDraftValidator
  */
 
-const logger = require('../config/winston.config');
-const { schemas, stepConfig } = require('@partner-platform/shared-validation');
 
 /**
  * Map step IDs to their corresponding schemas
  */
+import logger from '../config/winston.config.js';
+import { schemas, stepConfig } from '@partner-platform/shared-validation';
+
 const STEP_SCHEMA_MAP = {
   'property-type': null, // No schema validation needed (simple enum)
   'location-selection': schemas.locationSelectionSchema,
@@ -216,10 +217,4 @@ function getValidationSummary(draftData, propertyType) {
   };
 }
 
-module.exports = {
-  validateStep,
-  validateDraftData,
-  validateRequiredSteps,
-  getValidationSummary,
-  STEP_SCHEMA_MAP,
-};
+export { validateStep, validateDraftData, validateRequiredSteps, getValidationSummary, STEP_SCHEMA_MAP };

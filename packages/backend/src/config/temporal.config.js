@@ -5,7 +5,7 @@ require('dotenv').config();
  * Configure connection settings for Temporal Server
  */
 
-module.exports = {
+export default {
     // Temporal Server address
     address: process.env.TEMPORAL_ADDRESS || 'localhost:7233',
     

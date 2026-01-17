@@ -1,6 +1,6 @@
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const jwt = require("jsonwebtoken");
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 passport.use(
   new GoogleStrategy(
     {

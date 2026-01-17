@@ -1,7 +1,8 @@
-const logger = require("../config/winston.config.js");
-const OtpAuthService = require("../service/OtpAuthService.service.js");
-const { ApiResponse } = require("../utils/responseFormatter.js");
-const jwt = require("jsonwebtoken");
+
+import logger from '../config/winston.config.js';
+import OtpAuthService from '../service/OtpAuthService.service.js';
+import { ApiResponse } from '../utils/responseFormatter.js';
+import jwt from 'jsonwebtoken';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -195,8 +196,4 @@ async function resendOtp(req, res) {
   }
 }
 
-module.exports = {
-  sendOtp,
-  verifyOtp,
-  resendOtp,
-};
+export default { sendOtp, verifyOtp, resendOtp };

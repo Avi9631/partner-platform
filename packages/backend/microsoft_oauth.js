@@ -1,6 +1,6 @@
-const passport = require("passport");
-const MicrosoftStrategy = require('passport-microsoft').Strategy;
-const jwt = require("jsonwebtoken");
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 passport.use(
   new MicrosoftStrategy(
     {

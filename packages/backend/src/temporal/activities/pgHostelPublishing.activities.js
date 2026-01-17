@@ -7,13 +7,15 @@
  * @module temporal/activities/pgHostelPublishing.activities
  */
 
-const PgColiveHostelService = require("../../service/PgColiveHostelService.service");
-const { debitFromWallet, getWalletBalance } = require("./wallet.activities");
-const db = require("../../entity");
+import PgColiveHostelService from '../../service/PgColiveHostelService.service.js';
+import walletActivities from './wallet.activities.js';
+const { debitFromWallet, getWalletBalance } = walletActivities;
+import db from '../../entity/index.js';
+import logger from '../../config/winston.config.js';
+
 const PgColiveHostel = db.PgColiveHostel;
 const PlatformUser = db.PlatformUser;
 const ListingDraft = db.ListingDraft;
-const logger = require("../../config/winston.config");
 
 /**
  * Fetch PG/Hostel data from ListingDraft entity
@@ -442,13 +444,4 @@ async function deductPublishingCredits({ userId, pgHostelId, amount = 10 }) {
   }
 }
 
-module.exports = {
-  fetchListingDraftData,
-  validatePgHostelData,
-  createPgHostelRecord,
-  updatePgHostelRecord,
-  sendPgHostelPublishingNotification,
-  updatePgHostelVerificationStatus,
-  updateListingDraftStatus,
-  deductPublishingCredits
-};
+export default { fetchListingDraftData, validatePgHostelData, createPgHostelRecord, updatePgHostelRecord, sendPgHostelPublishingNotification, updatePgHostelVerificationStatus, updateListingDraftStatus, deductPublishingCredits };

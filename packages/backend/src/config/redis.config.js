@@ -1,11 +1,12 @@
-const { createClient } = require('redis');
-const logger = require('./winston.config.js');
 
 /**
  * Redis Cloud Configuration
  * Using Redis Cloud for queue management with BullMQ
  * Using official redis package (node-redis)
  */
+
+import { createClient } from 'redis';
+import logger from './winston.config.js';
 
 let redisClient = null;
 
@@ -155,8 +156,4 @@ const getRedisConfig = () => {
     }
 };
 
-module.exports = {
-    getRedisConnection,
-    closeRedisConnection,
-    getRedisConfig
-};
+export { getRedisConnection, closeRedisConnection, getRedisConfig };

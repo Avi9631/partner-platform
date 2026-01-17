@@ -6,7 +6,6 @@
  * @module utils/draftDataTransformer
  */
 
-const logger = require('../config/winston.config');
 
 /**
  * Transform nested draft data to flat property data
@@ -14,6 +13,8 @@ const logger = require('../config/winston.config');
  * @param {Object} draftData - Nested draft data from form sections
  * @returns {Object} - Flat property data matching Property entity schema
  */
+import logger from '../config/winston.config.js';
+
 function transformDraftToPropertyData(draftData) {
   if (!draftData || typeof draftData !== 'object') {
     logger.warn('[Draft Transformer] Invalid draft data provided');
@@ -354,7 +355,4 @@ function validateTransformedData(propertyData) {
   };
 }
 
-module.exports = {
-  transformDraftToPropertyData,
-  validateTransformedData
-};
+export { transformDraftToPropertyData, validateTransformedData };

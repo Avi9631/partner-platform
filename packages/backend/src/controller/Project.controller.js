@@ -1,6 +1,5 @@
 import ProjectService from '../service/ProjectService.service.js';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
-import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
 import logger from '../config/winston.config.js';
 import db from '../entity/index.js';
 
@@ -54,31 +53,28 @@ const publishProject = async (req, res) => {
       }
     }
 
-    // Use skip-workflow (direct execution)
-    const workflowId = `project-publish-${userId}-${Date.now()}`;
+    // Execute publishing process
+    logger.info(`[Project Publishing] Starting publishing process`);
     
-    const result = await runWorkflowDirect(
-      WORKFLOWS.PROJECT_PUBLISHING,
-      {
-        userId,
-        draftId: draftId || null,
-        projectData
-      },
-      workflowId
-    );
+    const result = await ProjectService.publishProject(userId, draftId || null, projectData);
 
-    logger.info(`Started project publishing workflow: ${result.workflowId} (mode: direct)`);
+    if (!result.success) {
+      logger.error(`[Project Publishing] Publishing failed: ${result.message}`);
+      return sendErrorResponse(res, result.message || 'Project publishing failed', 400);
+    }
+
+    logger.info(`[Project Publishing] Publishing completed successfully`);
 
     // Return immediately without waiting for workflow completion
     return sendSuccessResponse(
       res,
       { 
-        workflowId: result.workflowId,
-        executionMode: 'direct',
-        message: 'Project publishing workflow started successfully'
+        message: 'Project published successfully',
+        project: result.data,
+        draftId: draftId || null
       },
-      'Project is being processed',
-      202
+      'Project has been published successfully',
+      200
     );
 
   } catch (error) {

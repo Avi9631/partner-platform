@@ -1,6 +1,5 @@
 import DeveloperService from '../service/DeveloperService.service.js';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
-import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
 import logger from '../config/winston.config.js';
 import db from '../entity/index.js';
 
@@ -62,31 +61,27 @@ const publishDeveloper = async (req, res) => {
       );
     }
 
-    // Use skip-workflow (direct execution)
-    const workflowId = `developer-publish-${userId}-${Date.now()}`;
+    // Execute publishing process
+    logger.info(`[Developer Publishing] Starting publishing process`);
     
-    const result = await runWorkflowDirect(
-      WORKFLOWS.DEVELOPER_PUBLISHING,
-      {
-        userId,
-        draftId,
-        developerData
-      },
-      workflowId
-    );
+    const result = await DeveloperService.publishDeveloper(userId, draftId);
 
-    logger.info(`Started developer publishing workflow: ${result.workflowId} (mode: direct)`);
+    if (!result.success) {
+      logger.error(`[Developer Publishing] Publishing failed: ${result.message}`);
+      return sendErrorResponse(res, result.message || 'Developer publishing failed', 400);
+    }
+
+    logger.info(`[Developer Publishing] Publishing completed successfully`);
 
     // Return immediately without waiting for workflow completion
     return sendSuccessResponse(
       res,
       { 
-        workflowId: result.workflowId,
-        executionMode: 'direct',
-        message: 'Developer publishing workflow started successfully'
+        message: 'Developer profile published successfully',
+        developer: result.data
       },
-      'Developer profile is being processed',
-      202
+      'Developer profile has been published successfully',
+      200
     );
   } catch (error) {
     logger.error('Error in publishDeveloper:', error);

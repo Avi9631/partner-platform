@@ -1,9 +1,11 @@
 import db from '../entity/index.js';
 import logger from '../config/winston.config.js';
 import { Op } from 'sequelize';
+import WalletService from './WalletService.service.js';
 
 const PgColiveHostel = db.PgColiveHostel;
 const PlatformUser = db.PlatformUser;
+const ListingDraft = db.ListingDraft;
 
 /**
  * Create slug from property name
@@ -53,6 +55,8 @@ const ensureUniqueSlug = async (baseSlug, excludePgHostelId = null) => {
  * @returns {Promise<object>} - Result object
  */
 const createPgColiveHostel = async (userId, draftId, pgHostelData) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     // Generate unique slug
     const baseSlug = createSlug(pgHostelData.propertyName);
@@ -60,6 +64,7 @@ const createPgColiveHostel = async (userId, draftId, pgHostelData) => {
 
     // Validate coordinates are provided (required for location field)
     if (!pgHostelData.coordinates || !pgHostelData.coordinates.lat || !pgHostelData.coordinates.lng) {
+      await transaction.rollback();
       throw new Error('Coordinates (lat, lng) are required for creating PG/Hostel listing');
     }
 
@@ -97,14 +102,16 @@ const createPgColiveHostel = async (userId, draftId, pgHostelData) => {
       mediaData: pgHostelData.mediaData || [],
       publishStatus: 'PENDING_REVIEW',
       verificationStatus: 'PENDING'
-    });
+    }, { transaction });
 
+    await transaction.commit();
     return {
       success: true,
       message: 'PG/Colive/Hostel created successfully',
       data: pgHostel
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error creating PG/Colive/Hostel:', error);
     throw error;
   }
@@ -118,16 +125,20 @@ const createPgColiveHostel = async (userId, draftId, pgHostelData) => {
  * @returns {Promise<object>} - Result object
  */
 const updatePgColiveHostel = async (pgHostelId, userId, updateData) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     // Find the PG/Hostel
     const pgHostel = await PgColiveHostel.findOne({
       where: {
         pgHostelId,
         userId
-      }
+      },
+      transaction
     });
 
     if (!pgHostel) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'PG/Hostel not found or unauthorized',
@@ -154,14 +165,16 @@ const updatePgColiveHostel = async (pgHostelId, userId, updateData) => {
     }
 
     // Update the record
-    await pgHostel.update(updateData);
+    await pgHostel.update(updateData, { transaction });
 
+    await transaction.commit();
     return {
       success: true,
       message: 'PG/Hostel updated successfully',
       data: pgHostel
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error updating PG/Hostel:', error);
     throw error;
   }
@@ -464,13 +477,17 @@ const getUserPgColiveHostels = async (userId) => {
  * @returns {Promise<object>} - Result object
  */
 const deletePgColiveHostel = async (pgHostelId, userId) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     // Find the PG/Hostel
     const pgHostel = await PgColiveHostel.findOne({
-      where: { pgHostelId }
+      where: { pgHostelId },
+      transaction
     });
 
     if (!pgHostel) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'PG/Hostel not found',
@@ -480,6 +497,7 @@ const deletePgColiveHostel = async (pgHostelId, userId) => {
 
     // Check if user is the owner
     if (pgHostel.userId !== userId) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Unauthorized: You are not the owner of this PG/Hostel',
@@ -488,13 +506,15 @@ const deletePgColiveHostel = async (pgHostelId, userId) => {
     }
 
     // Delete the PG/Hostel
-    await pgHostel.destroy();
+    await pgHostel.destroy({ transaction });
 
+    await transaction.commit();
     return {
       success: true,
       message: 'PG/Hostel deleted successfully'
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error deleting PG/Hostel:', error);
     return {
       success: false,
@@ -504,4 +524,233 @@ const deletePgColiveHostel = async (pgHostelId, userId) => {
   }
 };
 
-export default { createPgColiveHostel, updatePgColiveHostel, getPgColiveHostelById, getPgColiveHostelBySlug, listPgColiveHostels, searchNearbyPgHostels, getUserPgColiveHostels, deletePgColiveHostel };
+/**
+ * Fetch PG/Hostel draft data
+ * @param {number} userId - User ID
+ * @param {number} draftId - Draft ID
+ * @returns {Promise<object>} - Result with draft data
+ */
+const fetchPgHostelDraftData = async (userId, draftId) => {
+  try {
+    const draft = await ListingDraft.findOne({
+      where: {
+        draftId,
+        userId,
+        draftType: { [Op.in]: ['PG', 'COLIVE', 'HOSTEL'] }
+      }
+    });
+
+    if (!draft) {
+      return {
+        success: false,
+        message: 'PG/Hostel draft not found'
+      };
+    }
+
+    return {
+      success: true,
+      data: draft.draftData
+    };
+  } catch (error) {
+    logger.error('Error fetching PG/Hostel draft:', error);
+    throw error;
+  }
+};
+
+/**
+ * Validate PG/Hostel data
+ * @param {object} pgHostelData - PG/Hostel data
+ * @returns {Promise<object>} - Validation result
+ */
+const validatePgHostelData = async (userId, draftId, pgHostelData) => {
+  try {
+    const errors = [];
+
+    if (!pgHostelData.propertyName && !pgHostelData.name) {
+      errors.push('Property name is required');
+    }
+
+    if (!pgHostelData.propertyType) {
+      errors.push('Property type is required');
+    }
+
+    // Check if PG/Hostel already exists for this draft
+    const existingPgHostel = await PgColiveHostel.findOne({ where: { draftId } });
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        errors
+      };
+    }
+
+    return {
+      success: true,
+      isUpdate: !!existingPgHostel,
+      existingPgHostelId: existingPgHostel?.pgHostelId
+    };
+  } catch (error) {
+    logger.error('Error validating PG/Hostel data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update PG/Hostel draft status
+ * @param {number} draftId - Draft ID
+ * @param {string} status - New status
+ * @returns {Promise<object>} - Result
+ */
+const updatePgHostelDraftStatus = async (draftId, status) => {
+  try {
+    const draft = await ListingDraft.findByPk(draftId);
+    
+    if (!draft) {
+      return {
+        success: false,
+        message: 'Draft not found'
+      };
+    }
+
+    await draft.update({ draftStatus: status });
+
+    return {
+      success: true,
+      message: `Draft status updated to ${status}`
+    };
+  } catch (error) {
+    logger.error('Error updating draft status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Publish PG/Colive/Hostel - Complete workflow
+ * @param {number} userId - User ID
+ * @param {number} draftId - Draft ID
+ * @returns {Promise<object>} - Publishing result
+ */
+const publishPgHostel = async (userId, draftId) => {
+  const transaction = await db.sequelize.transaction();
+  
+  try {
+    logger.info(`[PG Hostel Publishing] Starting for user ${userId}, draft ${draftId}`);
+    
+    // Fetch PG/Hostel data from draft
+    const fetchResult = await fetchPgHostelDraftData(userId, draftId);
+    
+    if (!fetchResult.success) {
+      await transaction.rollback();
+      logger.error(`[PG Hostel Publishing] Failed to fetch draft data:`, fetchResult.message);
+      return {
+        success: false,
+        message: fetchResult.message || 'Failed to fetch draft data',
+        step: 'fetch'
+      };
+    }
+    
+    const pgHostelData = fetchResult.data;
+    logger.info(`[PG Hostel Publishing] Draft data fetched successfully`);
+    
+    // Validate PG/Hostel data
+    const validationResult = await validatePgHostelData(userId, draftId, pgHostelData);
+    
+    if (!validationResult.success) {
+      await transaction.rollback();
+      logger.error(`[PG Hostel Publishing] Validation failed:`, validationResult.errors);
+      return {
+        success: false,
+        message: 'PG/Hostel data validation failed',
+        errors: validationResult.errors,
+        step: 'validation'
+      };
+    }
+    
+    logger.info(`[PG Hostel Publishing] Validation passed`);
+    
+    const isUpdate = validationResult.isUpdate || false;
+    const existingPgHostelId = validationResult.existingPgHostelId;
+    
+    // Create or update PG/Hostel record
+    let operationResult;
+    
+    if (isUpdate) {
+      operationResult = await updatePgColiveHostel(existingPgHostelId, userId, pgHostelData);
+    } else {
+      operationResult = await createPgColiveHostel(userId, draftId, pgHostelData);
+    }
+    
+    if (!operationResult.success) {
+      await transaction.rollback();
+      logger.error(`[PG Hostel Publishing] Record ${isUpdate ? 'update' : 'creation'} failed`);
+      return {
+        success: false,
+        message: `Failed to ${isUpdate ? 'update' : 'create'} PG/Hostel record`,
+        step: isUpdate ? 'update' : 'creation'
+      };
+    }
+    
+    logger.info(`[PG Hostel Publishing] Record ${isUpdate ? 'updated' : 'created'}: ${operationResult.data.pgHostelId}`);
+    
+    const { pgHostelId, slug, propertyName } = operationResult.data;
+    
+    // Deduct publishing credits
+    const creditResult = await WalletService.debitFromWallet(
+      userId,
+      10,
+      'PG/Hostel listing published',
+      { pgHostelId, type: 'PG_HOSTEL_PUBLISH' }
+    );
+    
+    if (!creditResult.success) {
+      await transaction.rollback();
+      logger.error(`[PG Hostel Publishing] Failed to deduct credits:`, creditResult.message);
+      return {
+        success: false,
+        message: creditResult.message || 'Failed to deduct publishing credits',
+      };
+    }
+    
+    logger.info(`[PG Hostel Publishing] Credits deducted successfully`);
+    
+    // Update draft status
+    await updatePgHostelDraftStatus(draftId, 'PUBLISHED');
+    logger.info(`[PG Hostel Publishing] Draft status updated`);
+    
+    await transaction.commit();
+    return {
+      success: true,
+      message: `PG/Hostel ${isUpdate ? 'updated' : 'published'} successfully`,
+      data: {
+        pgHostelId,
+        slug,
+        propertyName,
+        isUpdate
+      }
+    };
+    
+  } catch (error) {
+    await transaction.rollback();
+    logger.error(`[PG Hostel Publishing] Process error:`, error);
+    return {
+      success: false,
+      message: error.message || 'PG/Hostel publishing failed',
+      error: error.toString(),
+    };
+  }
+};
+
+export default { 
+  createPgColiveHostel, 
+  updatePgColiveHostel, 
+  getPgColiveHostelById, 
+  getPgColiveHostelBySlug, 
+  listPgColiveHostels, 
+  searchNearbyPgHostels, 
+  getUserPgColiveHostels, 
+  deletePgColiveHostel,
+  fetchPgHostelDraftData,
+  validatePgHostelData,
+  updatePgHostelDraftStatus,
+  publishPgHostel
+};

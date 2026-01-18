@@ -1,9 +1,11 @@
 import db from '../entity/index.js';
 import { Op } from 'sequelize';
 import logger from '../config/winston.config.js';
+import WalletService from './WalletService.service.js';
 
 const Project = db.Project;
 const PlatformUser = db.PlatformUser;
+const ListingDraft = db.ListingDraft;
 
 /**
  * Create a new project record from draft data
@@ -13,12 +15,15 @@ const PlatformUser = db.PlatformUser;
  * @returns {Promise<object>} - Result object
  */
 const createProject = async (userId, draftId, projectData) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     logger.info(`Creating project for user ${userId}, draft ${draftId}`);
 
     // Validate user exists
-    const user = await PlatformUser.findByPk(userId);
+    const user = await PlatformUser.findByPk(userId, { transaction });
     if (!user) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'User not found',
@@ -86,8 +91,9 @@ const createProject = async (userId, draftId, projectData) => {
     };
 
     // Create project
-    const project = await Project.create(projectRecord);
+    const project = await Project.create(projectRecord, { transaction });
 
+    await transaction.commit();
     logger.info(`Project created successfully with ID: ${project.projectId}`);
 
     return {
@@ -107,6 +113,7 @@ const createProject = async (userId, draftId, projectData) => {
     };
 
   } catch (error) {
+    await transaction.rollback();
     logger.error(`Error creating project: ${error.message}`, {
       userId,
       draftId,
@@ -130,6 +137,8 @@ const createProject = async (userId, draftId, projectData) => {
  * @returns {Promise<object>} - Result object
  */
 const updateProject = async (projectId, userId, projectData) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     logger.info(`Updating project ${projectId} for user ${userId}`);
 
@@ -138,10 +147,12 @@ const updateProject = async (projectId, userId, projectData) => {
       where: {
         projectId,
         createdBy: userId
-      }
+      },
+      transaction
     });
 
     if (!project) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Project not found or unauthorized',
@@ -211,8 +222,9 @@ const updateProject = async (projectId, userId, projectData) => {
     }
 
     // Update project
-    await project.update(updateData);
+    await project.update(updateData, { transaction });
 
+    await transaction.commit();
     logger.info(`Project ${projectId} updated successfully`);
 
     return {
@@ -228,6 +240,7 @@ const updateProject = async (projectId, userId, projectData) => {
     };
 
   } catch (error) {
+    await transaction.rollback();
     logger.error(`Error updating project: ${error.message}`, {
       projectId,
       userId,
@@ -411,15 +424,19 @@ const getMyProjects = async (userId, page = 1, limit = 20) => {
  * @returns {Promise<object>} - Result object
  */
 const deleteProject = async (projectId, userId) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     const project = await Project.findOne({
       where: {
         projectId,
         createdBy: userId
-      }
+      },
+      transaction
     });
 
     if (!project) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Project not found or unauthorized',
@@ -428,8 +445,9 @@ const deleteProject = async (projectId, userId) => {
     }
 
     // Soft delete (paranoid mode)
-    await project.destroy();
+    await project.destroy({ transaction });
 
+    await transaction.commit();
     logger.info(`Project ${projectId} deleted successfully`);
 
     return {
@@ -439,6 +457,7 @@ const deleteProject = async (projectId, userId) => {
     };
 
   } catch (error) {
+    await transaction.rollback();
     logger.error(`Error deleting project: ${error.message}`, { projectId, userId });
     return {
       success: false,
@@ -570,4 +589,173 @@ const searchNearbyProjects = async (latitude, longitude, radiusKm, filters = {})
   }
 };
 
-export default { createProject, updateProject, getProjectById, listProjects, getMyProjects, deleteProject, searchNearbyProjects };
+/**
+ * Validate project data
+ * @param {object} projectData - Project data
+ * @returns {object} - Validation result
+ */
+const validateProjectData = async (userId, draftId, projectData) => {
+  try {
+    const errors = [];
+
+    if (!projectData.projectName && !projectData.name) {
+      errors.push('Project name is required');
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        errors
+      };
+    }
+
+    return {
+      success: true
+    };
+  } catch (error) {
+    logger.error('Error validating project data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update project draft status
+ * @param {number} draftId - Draft ID
+ * @param {string} status - New status
+ * @param {number} publishedId - Published project ID
+ * @param {string} publishedType - Published type
+ * @returns {Promise<object>} - Result
+ */
+const updateProjectDraftStatus = async (draftId, status, publishedId = null, publishedType = null) => {
+  try {
+    const draft = await ListingDraft.findByPk(draftId);
+    
+    if (!draft) {
+      return {
+        success: false,
+        message: 'Draft not found'
+      };
+    }
+
+    const updateData = { draftStatus: status };
+    if (publishedId) updateData.publishedId = publishedId;
+    if (publishedType) updateData.publishedType = publishedType;
+
+    await draft.update(updateData);
+
+    return {
+      success: true,
+      message: `Draft status updated to ${status}`
+    };
+  } catch (error) {
+    logger.error('Error updating draft status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Publish project - Complete workflow
+ * @param {number} userId - User ID
+ * @param {number} draftId - Draft ID
+ * @param {object} projectData - Project data
+ * @returns {Promise<object>} - Publishing result
+ */
+const publishProject = async (userId, draftId, projectData) => {
+  const transaction = await db.sequelize.transaction();
+  
+  try {
+    logger.info(`[Project Publishing] Starting for user ${userId}`);
+    
+    // Validate project data
+    const validationResult = await validateProjectData(userId, draftId, projectData);
+    
+    if (!validationResult.success) {
+      await transaction.rollback();
+      logger.error(`[Project Publishing] Validation failed:`, validationResult.errors);
+      return {
+        success: false,
+        message: 'Project data validation failed',
+        errors: validationResult.errors,
+      };
+    }
+    
+    logger.info(`[Project Publishing] Validation successful`);
+    
+    // Create or update project record
+    let projectResult;
+    if (projectData.projectId) {
+      projectResult = await updateProject(projectData.projectId, userId, projectData);
+    } else {
+      projectResult = await createProject(userId, draftId, projectData);
+    }
+    
+    if (!projectResult.success) {
+      await transaction.rollback();
+      logger.error(`[Project Publishing] Project creation/update failed`);
+      return {
+        success: false,
+        message: projectResult.error || 'Failed to create/update project',
+      };
+    }
+    
+    const projectId = projectResult.data.projectId;
+    logger.info(`[Project Publishing] Project record saved: ID ${projectId}`);
+    
+    // Deduct publishing credits
+    const creditResult = await WalletService.debitFromWallet(
+      userId,
+      10,
+      'Project listing published',
+      { projectId, type: 'PROJECT_PUBLISH' }
+    );
+    
+    if (!creditResult.success) {
+      await transaction.rollback();
+      logger.error(`[Project Publishing] Failed to deduct credits:`, creditResult.message);
+      return {
+        success: false,
+        message: creditResult.message || 'Failed to deduct publishing credits',
+      };
+    }
+    
+    logger.info(`[Project Publishing] Credits deducted successfully`);
+    
+    // Update draft status if draft was provided
+    if (draftId) {
+      await updateProjectDraftStatus(draftId, 'PUBLISHED', projectId, 'PROJECT');
+      logger.info(`[Project Publishing] Draft status updated`);
+    }
+    
+    await transaction.commit();
+    return {
+      success: true,
+      message: 'Project published successfully',
+      data: {
+        projectId,
+        projectName: projectResult.data.projectName
+      }
+    };
+    
+  } catch (error) {
+    await transaction.rollback();
+    logger.error(`[Project Publishing] Process error:`, error);
+    return {
+      success: false,
+      message: error.message || 'Project publishing failed',
+      error: error.toString(),
+    };
+  }
+};
+
+export default { 
+  createProject, 
+  updateProject, 
+  getProjectById, 
+  listProjects, 
+  getMyProjects, 
+  deleteProject, 
+  searchNearbyProjects,
+  validateProjectData,
+  updateProjectDraftStatus,
+  publishProject
+};

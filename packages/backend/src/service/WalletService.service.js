@@ -43,7 +43,7 @@ const getWalletBalance = async (userId) => {
  * @param {object} metadata - Additional metadata (optional)
  * @returns {Promise<{success: boolean, transaction?: object, message?: string}>}
  */
-const addFunds = async (userId, amount, reason, metadata = null) => {
+const creditToWallet = async (userId, amount, reason, metadata = null) => {
   const transaction = await db.sequelize.transaction();
   
   try {
@@ -107,7 +107,7 @@ const addFunds = async (userId, amount, reason, metadata = null) => {
  * @param {object} metadata - Additional metadata (optional)
  * @returns {Promise<{success: boolean, transaction?: object, message?: string}>}
  */
-const deductFunds = async (userId, amount, reason, metadata = null) => {
+const debitFromWallet = async (userId, amount, reason, metadata = null) => {
   const transaction = await db.sequelize.transaction();
   
   try {
@@ -185,7 +185,7 @@ const deductFunds = async (userId, amount, reason, metadata = null) => {
  * @param {Date} options.endDate - Filter transactions until this date (optional)
  * @returns {Promise<{success: boolean, data?: object, message?: string}>}
  */
-const getTransactionHistory = async (userId, options = {}) => {
+const getWalletTransactionHistory = async (userId, options = {}) => {
   try {
     const {
       page = 1,
@@ -269,7 +269,7 @@ const getTransactionHistory = async (userId, options = {}) => {
  * @param {number} requiredAmount - Required amount
  * @returns {Promise<{success: boolean, hasSufficientFunds: boolean, currentBalance: number, message?: string}>}
  */
-const checkSufficientFunds = async (userId, requiredAmount) => {
+const checkSufficientWalletFunds = async (userId, requiredAmount) => {
   try {
     const balanceResult = await getWalletBalance(userId);
     
@@ -357,4 +357,4 @@ const getWalletStats = async (userId) => {
   }
 };
 
-export default { getWalletBalance, addFunds, deductFunds, getTransactionHistory, checkSufficientFunds, getWalletStats };
+export default { getWalletBalance, creditToWallet, debitFromWallet, getWalletTransactionHistory, checkSufficientWalletFunds, getWalletStats };

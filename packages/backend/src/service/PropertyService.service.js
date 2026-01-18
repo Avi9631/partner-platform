@@ -1,9 +1,11 @@
 import db from '../entity/index.js';
 import { Op } from 'sequelize';
 import logger from '../config/winston.config.js';
+import WalletService from './WalletService.service.js';
 
 const Property = db.Property;
 const PlatformUser = db.PlatformUser;
+const ListingDraft = db.ListingDraft;
 
 /**
  * Validate and format date field
@@ -42,12 +44,15 @@ const validateDate = (dateValue) => {
  * @returns {Promise<object>} - Result object
  */
 const createProperty = async (userId, draftId, propertyData) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     logger.info(`Creating property for user ${userId}, draft ${draftId}`);
 
     // Validate user exists
-    const user = await PlatformUser.findByPk(userId);
+    const user = await PlatformUser.findByPk(userId, { transaction });
     if (!user) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'User not found',
@@ -180,8 +185,9 @@ const createProperty = async (userId, draftId, propertyData) => {
     };
 
     // Create property record
-    const property = await Property.create(propertyRecord);
+    const property = await Property.create(propertyRecord, { transaction });
 
+    await transaction.commit();
     logger.info(`Property created successfully: ${property.propertyId}`);
 
     return {
@@ -190,6 +196,7 @@ const createProperty = async (userId, draftId, propertyData) => {
       data: property
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error creating property:', error);
     return {
       success: false,
@@ -207,6 +214,8 @@ const createProperty = async (userId, draftId, propertyData) => {
  * @returns {Promise<object>} - Result object
  */
 const updateProperty = async (propertyId, userId, updateData) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     logger.info(`Updating property ${propertyId} for user ${userId}`);
 
@@ -215,10 +224,12 @@ const updateProperty = async (propertyId, userId, updateData) => {
       where: {
         propertyId,
         createdBy: userId
-      }
+      },
+      transaction
     });
 
     if (!property) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Property not found or unauthorized',
@@ -316,8 +327,9 @@ const updateProperty = async (propertyId, userId, updateData) => {
       }
     }
 
-    await property.update(updateFields);
+    await property.update(updateFields, { transaction });
 
+    await transaction.commit();
     logger.info(`Property updated successfully: ${propertyId}`);
 
     return {
@@ -326,6 +338,7 @@ const updateProperty = async (propertyId, userId, updateData) => {
       data: property
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error updating property:', error);
     return {
       success: false,
@@ -517,6 +530,8 @@ const listProperties = async (filters) => {
  * @returns {Promise<object>} - Result object
  */
 const deleteProperty = async (propertyId, userId) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     logger.info(`Deleting property ${propertyId} for user ${userId}`);
 
@@ -525,10 +540,12 @@ const deleteProperty = async (propertyId, userId) => {
       where: {
         propertyId,
         createdBy: userId
-      }
+      },
+      transaction
     });
 
     if (!property) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Property not found or unauthorized',
@@ -537,8 +554,9 @@ const deleteProperty = async (propertyId, userId) => {
     }
 
     // Soft delete (paranoid is enabled in entity)
-    await property.destroy();
+    await property.destroy({ transaction });
 
+    await transaction.commit();
     logger.info(`Property deleted successfully: ${propertyId}`);
 
     return {
@@ -547,6 +565,7 @@ const deleteProperty = async (propertyId, userId) => {
       data: { propertyId }
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error deleting property:', error);
     return {
       success: false,
@@ -698,4 +717,232 @@ const searchNearbyProperties = async (latitude, longitude, radiusKm, filters = {
   }
 };
 
-export default { createProperty, updateProperty, getPropertyById, getUserProperties, listProperties, deleteProperty, searchNearbyProperties };
+/**
+ * Fetch property data from draft
+ * @param {number} userId - User ID
+ * @param {number} draftId - Draft ID
+ * @returns {Promise<object>} - Result with draft data
+ */
+const fetchPropertyDraftData = async (userId, draftId) => {
+  try {
+    const draft = await ListingDraft.findOne({
+      where: {
+        draftId,
+        userId,
+        draftType: 'PROPERTY'
+      }
+    });
+
+    if (!draft) {
+      return {
+        success: false,
+        message: 'Property draft not found'
+      };
+    }
+
+    return {
+      success: true,
+      data: draft.draftData
+    };
+  } catch (error) {
+    logger.error('Error fetching property draft:', error);
+    throw error;
+  }
+};
+
+/**
+ * Validate property data
+ * @param {number} userId - User ID
+ * @param {number} draftId - Draft ID
+ * @param {object} propertyData - Property data
+ * @returns {Promise<object>} - Validation result
+ */
+const validatePropertyData = async (userId, draftId, propertyData) => {
+  try {
+    const errors = [];
+
+    if (!propertyData['listing-info'].title && !propertyData['listing-info'].description) {
+      errors.push('Property name/title is required');
+    }
+
+    if (!propertyData['property-type'].propertyType) {
+      errors.push('Property type is required');
+    }
+
+    // Check if property already exists for this draft
+    const existingProperty = await Property.findOne({ where: { draftId } });
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        errors
+      };
+    }
+
+    return {
+      success: true,
+      existingProperty
+    };
+  } catch (error) {
+    logger.error('Error validating property data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update draft status
+ * @param {number} draftId - Draft ID
+ * @param {string} status - New status
+ * @returns {Promise<object>} - Result
+ */
+const updatePropertyDraftStatus = async (draftId, status) => {
+  try {
+    const draft = await ListingDraft.findByPk(draftId);
+    
+    if (!draft) {
+      return {
+        success: false,
+        message: 'Draft not found'
+      };
+    }
+
+    await draft.update({ draftStatus: status });
+
+    return {
+      success: true,
+      message: `Draft status updated to ${status}`
+    };
+  } catch (error) {
+    logger.error('Error updating draft status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Publish property - Complete workflow
+ * @param {number} userId - User ID
+ * @param {number} draftId - Draft ID
+ * @returns {Promise<object>} - Publishing result
+ */
+const publishProperty = async (userId, draftId) => {
+  const transaction = await db.sequelize.transaction();
+  
+  try {
+    logger.info(`[Property Publishing] Starting for user ${userId}, draft ${draftId}`);
+    
+    // Fetch property data from draft
+    const fetchResult = await fetchPropertyDraftData(userId, draftId);
+    
+    if (!fetchResult.success) {
+      await transaction.rollback();
+      logger.error(`[Property Publishing] Failed to fetch draft data:`, fetchResult.message);
+      return {
+        success: false,
+        message: fetchResult.message || 'Failed to fetch draft data',
+      };
+    }
+
+    const propertyData = fetchResult.data;
+    logger.info(`[Property Publishing] Draft data fetched successfully`);
+    
+    // Validate property data
+    const validationResult = await validatePropertyData(userId, draftId, propertyData);
+    
+    if (!validationResult.success) {
+      await transaction.rollback();
+      logger.error(`[Property Publishing] Validation failed:`, validationResult.errors);
+      return {
+        success: false,
+        message: 'Property data validation failed',
+        errors: validationResult.errors,
+      };
+    }
+    
+    logger.info(`[Property Publishing] Validation successful`);
+    
+    const existingProperty = validationResult.existingProperty;
+    const isUpdate = !!existingProperty;
+    
+    let propertyResult;
+    
+    if (isUpdate) {
+      logger.info(`[Property Publishing] Updating existing property ${existingProperty.propertyId}`);
+      propertyResult = await updateProperty(existingProperty.propertyId, userId, propertyData);
+    } else {
+      logger.info(`[Property Publishing] Creating new property`);
+      propertyResult = await createProperty(userId, draftId, propertyData);
+    }
+    
+    if (!propertyResult.success) {
+      await transaction.rollback();
+      logger.error(`[Property Publishing] Failed to ${isUpdate ? 'update' : 'create'} property:`, propertyResult.message);
+      return {
+        success: false,
+        message: propertyResult.message || `Failed to ${isUpdate ? 'update' : 'create'} property`,
+      };
+    }
+    
+    const property = propertyResult.data;
+    logger.info(`[Property Publishing] Property ${isUpdate ? 'updated' : 'created'} successfully: ${property.propertyId}`);
+    
+    // Deduct publishing credits
+    logger.info(`[Property Publishing] Deducting publishing credits`);
+    
+    const creditResult = await WalletService.debitFromWallet(
+      userId,
+      10,
+      'Property listing published',
+      { propertyId: property.propertyId, type: 'PROPERTY_PUBLISH' }
+    );
+    
+    if (!creditResult.success) {
+      await transaction.rollback();
+      logger.error(`[Property Publishing] Failed to deduct credits:`, creditResult.message);
+      return {
+        success: false,
+        message: creditResult.message || 'Failed to deduct publishing credits',
+      };
+    }
+    
+    logger.info(`[Property Publishing] Credits deducted successfully. New balance: ${creditResult.newBalance}`);
+    
+    // Update draft status
+    await updatePropertyDraftStatus(draftId, 'PUBLISHED');
+    logger.info(`[Property Publishing] Draft status updated`);
+    
+    await transaction.commit();
+    logger.info(`[Property Publishing] Process completed successfully`);
+    return {
+      success: true,
+      message: `Property ${isUpdate ? 'updated' : 'published'} successfully`,
+      data: {
+        propertyId: property.propertyId,
+        propertyName: property.propertyName,
+        isUpdate,
+      },
+    };
+    
+  } catch (error) {
+    await transaction.rollback();
+    logger.error(`[Property Publishing] Process error:`, error);
+    return {
+      success: false,
+      message: error.message || 'Property publishing failed',
+      error: error.toString(),
+    };
+  }
+};
+
+export default { 
+  createProperty, 
+  updateProperty, 
+  getPropertyById, 
+  getUserProperties, 
+  listProperties, 
+  deleteProperty, 
+  searchNearbyProperties,
+  fetchPropertyDraftData,
+  validatePropertyData,
+  updatePropertyDraftStatus,
+  publishProperty
+};

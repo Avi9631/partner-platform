@@ -1,8 +1,5 @@
 import PropertyService from '../service/PropertyService.service.js';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
-import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
-import { transformDraftToPropertyData, validateTransformedData } from '../utils/draftDataTransformer.js';
-import { validateDraftData, getValidationSummary } from '../utils/propertyDraftValidator.js';
 import logger from '../config/winston.config.js';
 import db from '../entity/index.js';
 
@@ -19,19 +16,15 @@ const publishProperty = async (req, res) => {
     const userId = req.user.userId;
     const { draftId } = req.body;
 
-    // ============================================
-    // Step 1: Validate Draft ID
-    // ============================================
+    // Validate Draft ID
     if (!draftId) {
       logger.error('[Property Publishing] Draft ID missing in request');
-      return sendErrorResponse(res, 'Draft ID is required in the request payload', 400);
+      return sendErrorResponse(res, 'Draft ID is required', 400);
     }
 
     logger.info(`[Property Publishing] Starting publish process for draft ${draftId}, user ${userId}`);
 
-    // ============================================
-    // Step 2: Fetch and Validate Draft
-    // ============================================
+    // Fetch and Validate Draft
     const draft = await ListingDraft.findOne({
       where: {
         draftId: draftId,
@@ -44,7 +37,7 @@ const publishProperty = async (req, res) => {
       logger.error(`[Property Publishing] Draft not found - draftId: ${draftId}, userId: ${userId}`);
       return sendErrorResponse(
         res,
-        'Draft not found or unauthorized. Please ensure the draft exists and belongs to you.',
+        'Draft not found or you do not have permission to access it',
         404
       );
     }
@@ -54,90 +47,14 @@ const publishProperty = async (req, res) => {
       logger.error(`[Property Publishing] Draft ${draftId} has no valid data`);
       return sendErrorResponse(
         res,
-        'Draft has no property data. Please complete the property form before publishing.',
+        'Draft has no property data',
         400
       );
     }
 
-    logger.info(`[Property Publishing] Draft fetched successfully - status: ${draft.draftStatus}`);
+    logger.info(`[Property Publishing] Draft validated successfully - status: ${draft.draftStatus}`);
 
-    // ============================================
-    // Step 2.5: Validate Draft Data with Zod Schemas
-    // ============================================
-    const propertyType = draft.draftData['property-type']?.propertyType;
-    
-    if (!propertyType) {
-      logger.error(`[Property Publishing] Property type not found in draft data`);
-      return sendErrorResponse(
-        res,
-        'Property type is required. Please complete the property type step.',
-        400
-      );
-    }
-
-    logger.info(`[Property Publishing] Validating draft data for property type: ${propertyType}`);
-    
-    const schemaValidation = validateDraftData(draft.draftData, propertyType);
-    
-    if (!schemaValidation.valid) {
-      logger.error(`[Property Publishing] Schema validation failed:`, schemaValidation.errors);
-      
-      // Get validation summary for better error reporting
-      const validationSummary = getValidationSummary(draft.draftData, propertyType);
-      
-      return sendErrorResponse(
-        res,
-        'Property data validation failed. Please check the errors and fix the issues.',
-        400,
-        {
-          validationErrors: schemaValidation.errors,
-          summary: {
-            completedSteps: validationSummary.completedSteps,
-            totalSteps: validationSummary.totalSteps,
-            completenessPercentage: validationSummary.completenessPercentage,
-            missingSteps: validationSummary.missingSteps,
-          }
-        }
-      );
-    }
-
-    logger.info(`[Property Publishing] Schema validation passed successfully`);
-
-    // ============================================
-    // Step 3: Transform Draft Data
-    // ============================================
-    let transformedData;
-    try {
-      transformedData = transformDraftToPropertyData(draft.draftData);
-      logger.info(`[Property Publishing] Draft data transformed successfully`);
-    } catch (transformError) {
-      logger.error(`[Property Publishing] Transformation error:`, transformError);
-      return sendErrorResponse(
-        res,
-        `Failed to process property data: ${transformError.message}`,
-        400
-      );
-    }
-
-    // ============================================
-    // Step 4: Validate Transformed Data
-    // ============================================
-    const validation = validateTransformedData(transformedData);
-    if (!validation.valid) {
-      logger.error(`[Property Publishing] Validation failed:`, validation.errors);
-      return sendErrorResponse(
-        res,
-        'Property data validation failed',
-        400,
-        { errors: validation.errors }
-      );
-    }
-
-    logger.info(`[Property Publishing] Data validation passed`);
-
-    // ============================================
-    // Step 5: Check for Existing Property (Update vs Create)
-    // ============================================
+    // Check for Existing Property (Update vs Create)
     const existingProperty = await Property.findOne({
       where: { draftId }
     });
@@ -150,50 +67,44 @@ const publishProperty = async (req, res) => {
       logger.info(`[Property Publishing] No existing property - will create new`);
     }
 
-    // ============================================
-    // Step 6: Start Workflow (Direct Execution)
-    // ============================================
-    const workflowId = `property-publish-${userId}-${draftId}-${Date.now()}`;
+    // Execute publishing process
+    logger.info(`[Property Publishing] Starting publishing process`);
     
-    logger.info(`[Property Publishing] Starting workflow: ${workflowId}`);
-    
-    const result = await runWorkflowDirect(
-      WORKFLOWS.PROPERTY_PUBLISHING,
-      {
-        userId,
-        draftId
-      },
-      workflowId
-    );
+    const result = await PropertyService.publishProperty(userId, draftId);
 
-    logger.info(`[Property Publishing] Workflow started successfully: ${result.workflowId} (mode: direct)`);
+    if (!result.success) {
+      logger.error(`[Property Publishing] Publishing failed: ${result.message}`);
+      return sendErrorResponse(res, result.message || 'Property publishing failed', 400);
+    }
 
-    // ============================================
-    // Step 7: Return Response
-    // ============================================
+    logger.info(`[Property Publishing] Publishing completed successfully`);
+
+    // Return Response
+    const propertyType = draft.draftData['property-type']?.propertyType;
+    const locationData = draft.draftData['location-selection'];
+    const listingInfo = draft.draftData['listing-info'];
+
     return sendSuccessResponse(
       res,
       { 
-        workflowId: result.workflowId,
         draftId,
         isUpdate,
-        executionMode: 'direct',
         propertyPreview: {
-          name: transformedData.propertyName || transformedData.title,
-          type: transformedData.propertyType,
-          city: transformedData.city,
-          locality: transformedData.locality
+          name: listingInfo?.title || 'Untitled Property',
+          type: propertyType,
+          city: locationData?.city,
+          locality: locationData?.locality
         },
-        message: `Property ${isUpdate ? 'update' : 'publishing'} workflow started successfully`
+        message: `Property ${isUpdate ? 'updated' : 'published'} successfully`
       },
-      `Property is being ${isUpdate ? 'updated' : 'processed'}. You will be notified once complete.`,
-      202
+      `Property has been ${isUpdate ? 'updated' : 'published'} successfully.`,
+      200
     );
   } catch (error) {
     logger.error('[Property Publishing] Unexpected error:', error);
     return sendErrorResponse(
       res,
-      'An error occurred while publishing property. Please try again later.',
+      'An error occurred while publishing property',
       500
     );
   }

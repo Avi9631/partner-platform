@@ -7,7 +7,6 @@ import logger from '../config/winston.config.js';
 import UserService from '../service/UserService.service.js';
 import PartnerBusinessService from '../service/PartnerBusiness.service.js';
 import { ApiResponse } from '../utils/responseFormatter.js';
-import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
 
 async function getUser(req, res, next) {
   const apiResponse = new ApiResponse(req, res);
@@ -307,29 +306,24 @@ async function onboardUser(req, res, next) {
     // Get user email for notification
     const currentUser = await UserService.getUser(userId);
     
-    // Use skip-workflow (direct execution)
-    const workflowId = `partner-onboarding-${userId}-${Date.now()}`;
+    // Execute onboarding process
+    logger.info(`[Partner Onboarding] Starting onboarding process`);
     
-    const result = await runWorkflowDirect(
-      WORKFLOWS.PARTNER_ONBOARDING,
-      {
-        userId,
-        email: currentUser.email,
-        profileData: {
-          firstName: updateFields.firstName,
-          lastName: updateFields.lastName,
-          phone: updateFields.phone,
-          latitude: updateFields.latitude,
-          longitude: updateFields.longitude,
-          address: updateFields.address,
-        },
-        videoBuffer: profileVideo.buffer,
-        originalFilename: profileVideo.originalname,
-        videoMimetype: profileVideo.mimetype,
-        videoSize: profileVideo.size,
+    const result = await UserService.completePartnerOnboarding({
+      userId,
+      email: currentUser.email,
+      profileData: {
+        firstName: updateFields.firstName,
+        lastName: updateFields.lastName,
+        phone: updateFields.phone,
+        latitude: updateFields.latitude,
+        longitude: updateFields.longitude,
+        address: updateFields.address,
       },
-      workflowId
-    );
+      videoBuffer: profileVideo.buffer,
+      originalFilename: profileVideo.originalname,
+      videoMimetype: profileVideo.mimetype,
+    });
 
     logger.info(`Partner onboarding workflow started for user ${userId}: ${result.workflowId} (mode: direct)`);
 
@@ -590,33 +584,38 @@ async function onboardBusinessPartner(req, res, next) {
     // Get user email for notification
     const currentUser = await UserService.getUser(userId);
     
-    // Use skip-workflow (direct execution)
-    const workflowId = `business-onboarding-${userId}-${Date.now()}`;
+    // Execute business onboarding process
+    logger.info(`[Business Onboarding] Starting business onboarding process`);
     
-    const result = await runWorkflowDirect(
-      WORKFLOWS.PARTNER_BUSINESS_ONBOARDING,
-      {
-        userId,
-        email: currentUser.email,
-        businessData: {
-          businessName: businessData.businessName,
-          registrationNumber: businessData.registrationNumber,
-          businessAddress: businessData.businessAddress,
-          businessEmail: businessData.businessEmail,
-          businessPhones: businessData.businessPhones,
-        },
+    const result = await PartnerBusinessService.completeBusinessOnboarding({
+      userId,
+      email: currentUser.email,
+      businessData: {
+        agencyName: businessData.businessName,
+        agencyRegistrationNumber: businessData.registrationNumber,
+        agencyAddress: businessData.businessAddress,
+        agencyEmail: businessData.businessEmail,
+        agencyPhone: businessData.businessPhone,
       },
-      workflowId
-    );
+    });
 
-    logger.info(`Business onboarding workflow started for user ${userId}: ${result.workflowId} (mode: direct)`);
+    if (!result.success) {
+      logger.error(`[Business Onboarding] Onboarding failed: ${result.message}`);
+      
+      return apiResponse
+        .status(400)
+        .withMessage(result.message || 'Business onboarding failed')
+        .withError(result.error || 'Processing failed', 'ONBOARDING_ERROR', 'onboardBusinessPartner')
+        .error();
+    }
+
+    logger.info(`[Business Onboarding] Onboarding completed successfully for user ${userId}`);
 
     // Return accepted status immediately - workflow processes async
     return apiResponse
       .status(202)
       .withMessage("Business profile submitted for verification. Processing in progress.")
       .withData({ 
-        workflowId: result.workflowId,
         status: 'processing',
         message: 'Your business profile is being processed. You will receive an email once verification is complete.',
         executionMode: 'direct'

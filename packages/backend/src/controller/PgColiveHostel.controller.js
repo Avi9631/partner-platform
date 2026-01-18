@@ -1,6 +1,5 @@
 import PgColiveHostelService from '../service/PgColiveHostelService.service.js';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/responseFormatter.js';
-import { runWorkflowDirect, WORKFLOWS } from '../temporal/utils/workflowHelper.js';
 import logger from '../config/winston.config.js';
 import db from '../entity/index.js';
 
@@ -61,31 +60,28 @@ const publishPgColiveHostel = async (req, res) => {
 
     const isUpdate = !!existingPgHostel;
 
-    // Use skip-workflow (direct execution)
-    const workflowId = `pg-hostel-publish-${userId}-${Date.now()}`;
+    // Execute publishing process
+    logger.info(`[PG Hostel Publishing] Starting publishing process`);
     
-    const result = await runWorkflowDirect(
-      WORKFLOWS.PG_HOSTEL_PUBLISHING,
-      {
-        userId,
-        draftId
-      },
-      workflowId
-    );
+    const result = await PgColiveHostelService.publishPgHostel(userId, draftId);
 
-    logger.info(`Started PG/Hostel publishing workflow: ${result.workflowId} (mode: direct)`);
+    if (!result.success) {
+      logger.error(`[PG Hostel Publishing] Publishing failed: ${result.message}`);
+      return sendErrorResponse(res, result.message || 'PG/Hostel publishing failed', 400);
+    }
+
+    logger.info(`[PG Hostel Publishing] Publishing completed successfully`);
 
     // Return immediately without waiting for workflow completion
     return sendSuccessResponse(
       res,
       { 
-        workflowId: result.workflowId,
-        isUpdate,
-        executionMode: 'direct',
-        message: `PG/Hostel ${isUpdate ? 'update' : 'publishing'} workflow started successfully`
+        message: `PG/Hostel ${isUpdate ? 'updated' : 'published'} successfully`,
+        pgHostel: result.data,
+        isUpdate
       },
-      `PG/Colive/Hostel is being ${isUpdate ? 'updated' : 'processed'}`,
-      202
+      `PG/Colive/Hostel has been ${isUpdate ? 'updated' : 'published'} successfully`,
+      200
     );
   } catch (error) {
     logger.error('Error publishing PG/Colive/Hostel:', error);

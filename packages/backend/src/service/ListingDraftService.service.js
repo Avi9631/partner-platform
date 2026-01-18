@@ -14,19 +14,23 @@ const PlatformUser = db.PlatformUser;
  * @returns {Promise<object>} The created draft
  */
 const createDraft = async (userId, draftType) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     const draft = await ListingDraft.create({
       userId: userId,
       draftStatus: 'DRAFT',
       draftType: draftType,
-    });
+    }, { transaction });
 
+    await transaction.commit();
     return {
       success: true,
       data: draft,
       message: 'Draft created successfully'
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error creating draft:', error);
     throw error;
   }
@@ -41,15 +45,19 @@ const createDraft = async (userId, draftType) => {
  * @returns {Promise<object>} The updated draft
  */
 const updateDraft = async (draftId, userId, draftData, draftType) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     const draft = await ListingDraft.findOne({
       where: {
         draftId: draftId,
         userId: userId
-      }
+      },
+      transaction
     });
 
     if (!draft) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Draft not found or unauthorized'
@@ -58,14 +66,16 @@ const updateDraft = async (draftId, userId, draftData, draftType) => {
  
     draft.draftData = draftData
 
-    await draft.save();
+    await draft.save({ transaction });
 
+    await transaction.commit();
     return {
       success: true,
       data: draft,
       message: 'Draft updated successfully'
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error updating draft:', error);
     throw error;
   }
@@ -147,28 +157,34 @@ const getUserDrafts = async (userId, draftType) => {
  * @returns {Promise<object>} Success status
  */
 const deleteDraft = async (draftId, userId) => {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     const draft = await ListingDraft.findOne({
       where: {
         draftId: draftId,
         userId: userId
-      }
+      },
+      transaction
     });
 
     if (!draft) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Draft not found or unauthorized'
       };
     }
 
-    await draft.destroy();
+    await draft.destroy({ transaction });
 
+    await transaction.commit();
     return {
       success: true,
       message: 'Draft deleted successfully'
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error('Error deleting draft:', error);
     throw error;
   }
@@ -189,10 +205,12 @@ const submitDraft = async (draftId, userId) => {
       where: {
         draftId: draftId,
         userId: userId
-      }
+      },
+      transaction
     });
 
     if (!draft) {
+      await transaction.rollback();
       return {
         success: false,
         message: 'Draft not found or unauthorized'

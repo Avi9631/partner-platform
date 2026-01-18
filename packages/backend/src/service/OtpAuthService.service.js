@@ -76,10 +76,13 @@ async function sendOtp(phone) {
  * @returns {Promise<{verified: boolean, user?: object, message?: string}>}
  */
 async function verifyOtp(phone, otp, verificationType) {
+  const transaction = await db.sequelize.transaction();
+  
   try {
     const otpData = otpStore.get(phone);
 
     if (!otpData) {
+      await transaction.rollback();
       return {
         verified: false,
         message: "OTP not found. Please request a new OTP.",
@@ -89,6 +92,7 @@ async function verifyOtp(phone, otp, verificationType) {
     // Check if OTP is expired
     if (new Date() > otpData.expiresAt) {
       otpStore.delete(phone);
+      await transaction.rollback();
       return {
         verified: false,
         message: "OTP has expired. Please request a new OTP.",
@@ -98,6 +102,7 @@ async function verifyOtp(phone, otp, verificationType) {
     // Check if too many attempts
     if (otpData.attempts >= 3) {
       otpStore.delete(phone);
+      await transaction.rollback();
       return {
         verified: false,
         message: "Too many failed attempts. Please request a new OTP.",
@@ -108,6 +113,7 @@ async function verifyOtp(phone, otp, verificationType) {
     if (otpData.otp !== otp) {
       otpData.attempts += 1;
       otpStore.set(phone, otpData);
+      await transaction.rollback();
       return {
         verified: false,
         message: `Invalid OTP. ${3 - otpData.attempts} attempts remaining.`,
@@ -128,6 +134,7 @@ async function verifyOtp(phone, otp, verificationType) {
           required: false,
         },
       ],
+      transaction
     });
 
     if (!user) {
@@ -138,13 +145,13 @@ async function verifyOtp(phone, otp, verificationType) {
         lastName: phone.slice(-4), // Use last 4 digits as temp last name
         phoneVerifiedAt: new Date(),
         nameInitial: getInitials(`User ${phone.slice(-4)}`),
-      });
+      }, { transaction });
       logger.info(`New user created with phone: ${phone}`);
     } else {
       // Update phone verification timestamp
       await user.update({
         phoneVerifiedAt: new Date(),
-      });
+      }, { transaction });
     }
   }
   
@@ -153,6 +160,7 @@ async function verifyOtp(phone, otp, verificationType) {
       ? 'BUSINESS' 
       : 'INDIVIDUAL';
 
+    await transaction.commit();
     return {
       verified: true,
       user: {
@@ -167,6 +175,7 @@ async function verifyOtp(phone, otp, verificationType) {
       },
     };
   } catch (error) {
+    await transaction.rollback();
     logger.error(`Error verifying OTP: ${error.message}`);
     throw new Error("Failed to verify OTP");
   }

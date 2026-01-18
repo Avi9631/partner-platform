@@ -13,21 +13,35 @@ Centralizes database entity definitions to:
 ## Usage
 
 ```javascript
-const initializeEntities = require('@partner-platform/shared-entities');
+import Sequelize from 'sequelize';
+import initializeEntities from '@partner-platform/shared-entities';
 
-// Pass your database configuration
-const dbConfig = {
-  DB: 'database_name',
-  USER: 'username',
-  PASSWORD: 'password',
-  HOST: 'localhost',
+// Initialize Sequelize with your application-specific configuration
+const sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost',
   port: 5432,
   dialect: 'postgres',
-  dialectOptions: { /* ... */ },
+  logging: false, // Your app's logging preference
   pool: {
     max: 5,
     min: 0,
     acquire: 30000,
+    idle: 10000
+  },
+  dialectOptions: {
+    ssl: { /* your SSL config */ }
+  },
+  define: {
+    freezeTableName: true,
+    timestamps: true
+  }
+});
+
+// Initialize entities with your Sequelize instance
+const db = initializeEntities(sequelize);
+
+// Access entities
+const { PlatformUser, Property, Developer } = db;
     idle: 10000
   }
 };

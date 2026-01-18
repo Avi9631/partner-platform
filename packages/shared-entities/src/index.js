@@ -5,8 +5,19 @@
  * for the Partner Platform monorepo.
  * 
  * Usage:
+ *   import Sequelize from 'sequelize';
  *   import initializeEntities from '@partner-platform/shared-entities';
- *   const db = initializeEntities(dbConfig);
+ *   
+ *   // Initialize Sequelize with your app-specific configuration
+ *   const sequelize = new Sequelize(database, username, password, {
+ *     host: 'localhost',
+ *     dialect: 'postgres',
+ *     pool: { max: 5, min: 0, acquire: 30000, idle: 10000 },
+ *     // ... other app-specific options
+ *   });
+ *   
+ *   // Initialize entities with your Sequelize instance
+ *   const db = initializeEntities(sequelize);
  *   
  *   // Access entities
  *   const { PlatformUser, Property, Developer } = db;
@@ -25,37 +36,15 @@ import ListingAnalyticsEntity from './entities/ListingAnalytics.entity.js';
 import ListingLeadEntity from './entities/ListingLead.entity.js';
 
 /**
- * Initialize entities with database configuration
- * @param {Object} dbConfig - Database configuration object
- * @param {string} dbConfig.DB - Database name
- * @param {string} dbConfig.USER - Database user
- * @param {string} dbConfig.PASSWORD - Database password
- * @param {string} dbConfig.HOST - Database host
- * @param {number} dbConfig.port - Database port
- * @param {string} dbConfig.dialect - Database dialect (postgres, mysql, etc.)
- * @param {Object} dbConfig.dialectOptions - Dialect-specific options
- * @param {Object} dbConfig.pool - Connection pool configuration
+ * Initialize entities with Sequelize instance
+ * @param {Object} sequelize - Initialized Sequelize instance from the application
  * @returns {Object} db - Database object with all entities and sequelize instance
  */
-export default function initializeEntities(dbConfig) {
-  // Initialize Sequelize instance
-  const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-    host: dbConfig.HOST,
-    dialect: dbConfig.dialect,
-    logging: false,
-    port: dbConfig.port,
-    dialectOptions: dbConfig.dialectOptions,
-    pool: {
-      max: dbConfig.pool.max,
-      min: dbConfig.pool.min,
-      acquire: dbConfig.pool.acquire,
-      idle: dbConfig.pool.idle,
-    },
-    define: {
-      freezeTableName: true, // Applies to all models
-      timestamps: true,
-    },
-  });
+export default function initializeEntities(sequelize) {
+  // Validate that a Sequelize instance was passed
+  if (!sequelize || typeof sequelize.define !== 'function') {
+    throw new Error('initializeEntities requires a valid Sequelize instance. Please pass an initialized Sequelize instance from your application.');
+  }
 
   const db = {};
 

@@ -13,13 +13,13 @@ const PropertyFormContextV2 = createContext(null);
 const getCompletedStepsFromData = (formData) => {
   const completedSteps = new Set();
   
-  // Extract propertyType from nested structure
-  const propertyType = formData['property-type']?.propertyType;
+  // Extract propertyType (can be at top level or nested)
+  const propertyType = formData.propertyType;
   const formDataWithType = { ...formData, propertyType };
   
   const visibleSteps = getVisibleSteps(formDataWithType);
 
-  // Let Zod schemas handle validation directly
+  // Validate each step directly (formData structure matches propertySchema)
   visibleSteps.forEach((step, index) => {
     const validationResult = validateStep(step.id, formDataWithType);
     
@@ -48,7 +48,7 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [draftId, setDraftId] = useState(initialDraftId || null);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({}); // Nested structure: { stepId: { field1: value1, ... } }
+  const [formData, setFormData] = useState({}); // Structure matches propertySchema: { basicDetails: {...}, locationSelection: {...} }
   const [currentStepSubmitHandler, setCurrentStepSubmitHandler] = useState(null);
   const [currentStepIsValid, setCurrentStepIsValid] = useState(true);
   const [areAllStepsValid, setAreAllStepsValid] = useState(false);
@@ -70,9 +70,11 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
         }
 
         if (draftData) {
+          // Data from API is already in propertySchema format - use directly
           setFormData(draftData);
-          // Extract propertyType from nested structure
-          const extractedPropertyType = draftData['property-type']?.propertyType;
+          
+          // Extract propertyType
+          const extractedPropertyType = draftData.propertyType;
           if (extractedPropertyType) {
             setPropertyType(extractedPropertyType);
           }
@@ -130,6 +132,7 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
   /**
    * Update form data for a specific step
    * @param {string} stepId - The ID of the step (e.g., 'basic-details')
+   * @param {Object} stepData - The data for that matches propertySchema key, e.g., 'basicDetails')
    * @param {Object} stepData - The data for that step
    */
   const updateFormData = useCallback((stepId, stepData) => {
@@ -144,10 +147,12 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
     console.log(`📝 Updated form data for step: ${stepId}`, stepData);
   }, []);
 
-  // Simplified draft save
+  // Simplified draft save - data already in propertySchema format
   const saveDraft = useCallback(async (updatedData) => {
     try {
       const dataToSave = updatedData || formData;
+      
+      console.log('💾 Saving draft in propertySchema format:', dataToSave);
       
       // Create draft if none exists
       if (!draftId) {
@@ -161,7 +166,7 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
         return { success: false, message: 'Failed to create draft' };
       }
       
-      // Update existing draft
+      // Update existing draft - data already in propertySchema format
       const response = await draftApi.updateListingDraft(draftId, dataToSave);
       return { success: response.success, draftId };
     } catch (error) {
@@ -184,19 +189,28 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
       return;
     }
     
-    // Update form data with nested structure
-    const updatedFormData = {
-      ...formData,
-      [currentStepId]: {
-        ...(formData[currentStepId] || {}),
-        ...stepData,
-      }
-    };
+    // Special handling for propertyType - it's a simple value, not a nested object
+    let updatedFormData;
+    if (currentStepId === 'propertyType') {
+      updatedFormData = {
+        ...formData,
+        propertyType: stepData.propertyType
+      };
+      // Update context state
+      setPropertyType(stepData.propertyType);
+    } else {
+      // For all other steps, use nested structure
+      updatedFormData = {
+        ...formData,
+        [currentStepId]: {
+          ...(formData[currentStepId] || {}),
+          ...stepData,
+        }
+      };
+      updateFormData(currentStepId, stepData);
+    }
     
     console.log('  Updated form data:', updatedFormData);
-    console.log('  Nested step data:', updatedFormData[currentStepId]);
-    
-    updateFormData(currentStepId, stepData);
     
     // Wait for draft to save before proceeding
     const result = await saveDraft(updatedFormData);
@@ -211,7 +225,7 @@ export const PropertyFormProviderV2 = ({ children, onClose, initialDraftId, edit
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     }
-  }, [currentStep, getTotalSteps, updateFormData, formData, saveDraft, formDataWithType]);
+  }, [currentStep, getTotalSteps, updateFormData, formData, saveDraft, formDataWithType, setPropertyType]);
 
   const previousStep = useCallback(() => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);

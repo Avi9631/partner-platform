@@ -57,7 +57,27 @@ export default function PropertyFormSidebar() {
 
   return (
     <aside className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen sticky top-0">
-   
+      {/* Property Type Badge */}
+      {propertyType && (
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-gray-900">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs font-medium text-muted-foreground block mb-1">
+                Property Type
+              </span>
+              <span className="text-sm font-semibold text-orange-600 capitalize">
+                {propertyType.replace(/_/g, ' ')}
+              </span>
+            </div>
+            <button
+              onClick={handleChangePropertyType}
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Change
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Progress */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">

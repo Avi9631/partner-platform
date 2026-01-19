@@ -15,7 +15,7 @@ const { locationSelectionSchema } = propertySchemas;
 import SaveAndContinueFooter from '../SaveAndContinueFooter';
 import LocationPicker from '@/components/maps/LocationPicker';
 
-const STEP_ID = 'location-selection';
+const STEP_ID = 'locationSelection';
 
 export default function LocationSelectionStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

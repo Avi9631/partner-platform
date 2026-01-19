@@ -25,7 +25,7 @@ import { propertySchemas } from '@partner-platform/shared-validation';
 const { areaDetailsSchema } = propertySchemas;
 import { createStepLogger } from '../../../utils/validationLogger';
 
-const STEP_ID = 'area-details';
+const STEP_ID = 'areaDetails';
 
 export default function AreaDetailsV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

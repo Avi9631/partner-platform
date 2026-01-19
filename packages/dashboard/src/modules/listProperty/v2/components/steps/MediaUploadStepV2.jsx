@@ -107,7 +107,7 @@ const DEFAULT_CATEGORIES = [
   "Other",
 ];
 
-const STEP_ID = 'media-upload';
+const STEP_ID = 'mediaUpload';
 
 export default function MediaUploadStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

@@ -20,7 +20,7 @@ import { propertySchemas } from '@partner-platform/shared-validation';
 const { floorDetailsSchema } = propertySchemas;
 import { createStepLogger } from '../../../utils/validationLogger';
 
-const STEP_ID = 'floor-details';
+const STEP_ID = 'floorDetails';
 
 export default function FloorDetailsStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

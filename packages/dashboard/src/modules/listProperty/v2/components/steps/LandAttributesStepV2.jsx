@@ -51,7 +51,7 @@ const soilTypes = [
   { value: 'loamy', label: 'Loamy Soil', icon: '🟢' },
 ];
 
-const STEP_ID = 'land-attributes';
+const STEP_ID = 'landAttributes';
 
 export default function LandAttributesStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

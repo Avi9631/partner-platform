@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Building2, Home, TreePine, LandPlot, ChevronRight } from 'lucide-react';
+import { Building2, Home, TreePine, LandPlot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
-import { Button } from '@/components/ui/button';
+import SaveAndContinueFooter from '../SaveAndContinueFooter';
 
 const propertyTypes = [
   {
@@ -29,32 +29,33 @@ const propertyTypes = [
   },
 ];
 
-const STEP_ID = 'property-type';
-
 export default function PropertyTypeStepV2() {
-  const { setPropertyType, saveAndContinue, getStepData, saveDraft, setCurrentStepIsValid } = usePropertyFormV2();
-  const stepData = getStepData(STEP_ID);
-  const [selectedType, setSelectedType] = useState(stepData?.propertyType || null);
+  const { setPropertyType, saveAndContinue, saveDraft, setCurrentStepIsValid, setCurrentStepSubmitHandler, formData } = usePropertyFormV2();
+  const [selectedType, setSelectedType] = useState(formData?.propertyType || null);
 
   // PropertyType step is always valid once a type is selected
   useEffect(() => {
     setCurrentStepIsValid(!!selectedType);
   }, [selectedType, setCurrentStepIsValid]);
 
+  // Register submit handler for the footer button
+  useEffect(() => {
+    const handleSubmit = () => {
+      if (selectedType) {
+        saveAndContinue({ propertyType: selectedType });
+      }
+    };
+    setCurrentStepSubmitHandler(() => handleSubmit);
+    return () => setCurrentStepSubmitHandler(null);
+  }, [selectedType, saveAndContinue, setCurrentStepSubmitHandler]);
+
   const handleSelectType = async (type) => {
     setSelectedType(type);
     setPropertyType(type);
     
-    // Auto-save the property type selection with nested structure
-    await saveDraft({ [STEP_ID]: { propertyType: type } });
+    // Only save the selection, don't auto-advance
+    // await saveDraft({ propertyType: type });
   };
-
-  const handleContinue = useCallback(() => {
-    if (selectedType) {
-      // Pass property type data to context and move to next step
-      saveAndContinue({ propertyType: selectedType });
-    }
-  }, [selectedType, saveAndContinue]);
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -170,7 +171,7 @@ export default function PropertyTypeStepV2() {
         ))}
       </div>
 
-    
+      {/* <SaveAndContinueFooter /> */}
     </div>
   );
 }

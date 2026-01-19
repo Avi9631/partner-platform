@@ -26,7 +26,7 @@ import { propertySchemas } from '@partner-platform/shared-validation';
 const { pricingInformationSchema } = propertySchemas;
 import { createStepLogger } from '../../../utils/validationLogger';
 
-const STEP_ID = 'pricing';
+const STEP_ID = 'pricingInformation';
 
 export default function PricingStepV2() {
   const { saveAndContinue, previousStep, getStepData, formDataWithType, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

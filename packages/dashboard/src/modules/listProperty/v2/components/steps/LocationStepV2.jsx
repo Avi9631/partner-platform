@@ -47,7 +47,7 @@ const propertyPositionOptions = [
   { value: 'rear', label: 'Rear Unit', description: 'Property at the back of the complex' },
 ];
 
-const STEP_ID = 'location-attributes';
+const STEP_ID = 'locationAttributes';
 
 export default function LocationStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

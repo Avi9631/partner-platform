@@ -1,6 +1,16 @@
 /**
  * Schema Mapping Utility
  * Maps step IDs to their corresponding validation schemas
+ * 
+ * SIMPLIFIED ARCHITECTURE:
+ * - Step IDs now match propertySchema keys directly (e.g., 'basicDetails', 'locationSelection')
+ * - FormData structure matches propertySchema - NO TRANSFORMATION NEEDED
+ * - Data sent to API is the same as formData structure
+ * 
+ * Data Flow (SIMPLIFIED):
+ * 1. UI collects data: { basicDetails: {...}, locationSelection: {...} }
+ * 2. This file validates each step using individual schemas
+ * 3. Same data sent directly to API - matches propertySchema format
  */
 
 import { propertySchemas } from '@partner-platform/shared-validation';
@@ -22,27 +32,27 @@ const {
 
 /**
  * Map of step IDs to their validation schemas
+ * Step IDs match propertySchema keys - NO TRANSFORMATION NEEDED
  */
 export const STEP_SCHEMA_MAP = {
-  'location-selection': locationSelectionSchema,
-  'basic-details': basicDetailsSchema,
-  'basic-configuration': basicConfigurationSchema,
-  'unit-amenities': unitAmenitiesSchema,
-  'location-attributes': locationAttributesSchema,
-  'floor-details': floorDetailsSchema,
-  'land-attributes': landAttributesSchema,
-  'pricing': pricingInformationSchema,
-  'suitable-for': suitableForSchema,
-  'listing-info': listingInformationSchema,
-  'property-amenities': propertyAmenitiesSchema,
-  'media-upload': mediaUploadSchema,
-  // 'property-type' doesn't need validation as it's just a selection
+  'locationSelection': locationSelectionSchema,
+  'basicDetails': basicDetailsSchema,
+  'basicConfiguration': basicConfigurationSchema,
+  'unitAmenities': unitAmenitiesSchema,
+  'locationAttributes': locationAttributesSchema,
+  'floorDetails': floorDetailsSchema,
+  'landAttributes': landAttributesSchema,
+  'pricingInformation': pricingInformationSchema,
+  'suitableFor': suitableForSchema,
+  'listingInformation': listingInformationSchema,
+  'propertyAmenities': propertyAmenitiesSchema,
+  'mediaUpload': mediaUploadSchema,
+  // 'propertyType' doesn't need validation as it's just a selection
 };
 
 /**
  * Validate form data against a specific step's schema
- * Handles both nested (stepId: {fields}) and flat structures
- * @param {string} stepId - The step ID
+ * @param {string} stepId - The step ID (matches propertySchema key, e.g., 'basicDetails')
  * @param {Object} formData - The form data to validate
  * @returns {{ success: boolean, errors?: Object }} Validation result
  */
@@ -54,34 +64,22 @@ export const validateStep = (stepId, formData) => {
     return { success: true };
   }
   
-  // Flatten nested structure: merge step-specific data with top-level data
+  // Get step data directly (formData structure matches propertySchema)
   const stepData = formData[stepId] || {};
-  const flattenedData = {};
   
-  // First, add all top-level primitives and arrays
-  Object.entries(formData).forEach(([key, value]) => {
-    if (typeof value !== 'object' || Array.isArray(value) || value === null) {
-      flattenedData[key] = value;
-    }
-  });
-  
-  // Then, merge in any nested step data (overwrites top-level if duplicate)
-  Object.assign(flattenedData, stepData);
-  
-  // Debug logging for location-selection step
-  if (stepId === 'location-selection') {
-    console.log('🔍 Validating location-selection step');
+  // Debug logging for locationSelection step
+  if (stepId === 'locationSelection') {
+    console.log('🔍 Validating locationSelection step');
     console.log('  Step data:', stepData);
-    console.log('  Flattened data:', flattenedData);
-    console.log('  Coordinates:', flattenedData.coordinates);
+    console.log('  Coordinates:', stepData.coordinates);
   }
   
   try {
-    schema.parse(flattenedData);
+    schema.parse(stepData);
     return { success: true };
   } catch (error) {
-    // Additional debug for location-selection validation failures
-    if (stepId === 'location-selection') {
+    // Additional debug for locationSelection validation failures
+    if (stepId === 'locationSelection') {
       console.error('❌ Location validation failed:', error.errors || error.issues);
     }
     return { 

@@ -47,7 +47,7 @@ const flooringOptions = [
   'Mosaic',
 ];
 
-const STEP_ID = 'unit-amenities';
+const STEP_ID = 'unitAmenities';
 
 export default function FurnishingStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

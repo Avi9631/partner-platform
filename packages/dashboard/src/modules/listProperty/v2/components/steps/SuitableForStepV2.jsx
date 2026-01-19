@@ -16,7 +16,7 @@ const suitableForOptions = [
   { value: 'students', label: 'Students', icon: '📚' },
 ];
 
-const STEP_ID = 'suitable-for';
+const STEP_ID = 'suitableFor';
 
 export default function SuitableForStepV2() {
   const { saveAndContinue, previousStep, getStepData, formDataWithType, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

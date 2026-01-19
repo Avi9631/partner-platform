@@ -1,5 +1,21 @@
 # Property Form V2 - Multi-Step Implementation
 
+## ⚠️ IMPORTANT: Simplified Architecture (January 2026)
+
+**We've massively simplified the codebase!** Step IDs now match propertySchema keys directly.
+
+**Read this first:** 📚 **[SIMPLIFIED_ARCHITECTURE.md](./SIMPLIFIED_ARCHITECTURE.md)** - Complete explanation
+
+### TL;DR: What Changed?
+- ✅ Step IDs now use camelCase matching propertySchema: `basicDetails`, `locationSelection`
+- ✅ No transformation layer needed - same format everywhere
+- ✅ FormData structure = PropertySchema structure  
+- ✅ Eliminated 200+ lines of unnecessary transformation code
+
+**Old docs** (now deprecated):
+- ~~[ARCHITECTURE.md](./ARCHITECTURE.md)~~ - Old complex architecture
+- ~~[propertySchemaTransformer.js](./utils/propertySchemaTransformer.js)~~ - Deleted!
+
 ## Overview
 
 This is an enhanced version of the property listing form that implements a **true multi-step workflow** with "Save & Continue" buttons. Each form section is presented as a separate step, and users must complete and save each step before progressing to the next.
@@ -43,6 +59,7 @@ The form is available in **two variants**:
 - Load drafts via URL params (`/list-property/edit/:draftId`)
 - Load drafts via props (`editingDraft`)
 - Draft state persists across sessions
+- **NEW**: Drafts saved in propertySchema format
 
 ### 6. **Reusable Components**
 - Leverages existing form components

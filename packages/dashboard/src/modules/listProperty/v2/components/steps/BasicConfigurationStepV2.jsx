@@ -24,7 +24,7 @@ import { propertySchemas } from '@partner-platform/shared-validation';
 
 const { basicConfigurationSchema } = propertySchemas;
 
-const STEP_ID = 'basic-configuration';
+const STEP_ID = 'basicConfiguration';
 
 export default function BasicConfigurationV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

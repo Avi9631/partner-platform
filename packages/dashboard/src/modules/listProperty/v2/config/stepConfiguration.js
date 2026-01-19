@@ -3,10 +3,11 @@
  * Each property type defines its own step flow for maximum flexibility
  * 
  * Architecture:
+ * - Step IDs match propertySchema keys directly (e.g., 'basicDetails', 'locationSelection')
+ * - No transformation needed - formData structure matches propertySchema
  * - Each property type has its own step array
  * - Steps are reusable components
  * - Easy to add/remove/reorder steps per property type
- * - Special handling for hybrid types (e.g., farmhouse = land + building)
  */
 
 import PropertyTypeStepV2 from '../components/steps/PropertyTypeStepV2';
@@ -25,68 +26,74 @@ import MediaUploadStepV2 from '../components/steps/MediaUploadStepV2';
 
 // ============================================
 // STEP DEFINITIONS (Reusable)
+// Step IDs now match propertySchema keys directly
 // ============================================
 
 const STEPS = {
   PROPERTY_TYPE: {
-    id: 'property-type',
+    id: 'propertyType',
     name: 'Property Type',
     component: PropertyTypeStepV2,
   },
   LOCATION_SELECTION: {
-    id: 'location-selection',
+    id: 'locationSelection',
     name: 'Location Selection',
     component: LocationSelectionStepV2,
   },
   BASIC_DETAILS: {
-    id: 'basic-details',
+    id: 'basicDetails',
     name: 'Basic Details',
     component: BasicDetailsStepV2,
   },
   BASIC_CONFIGURATION: {
-    id: 'basic-configuration',
+    id: 'basicConfiguration',
     name: 'Basic Configuration',
     component: BasicConfigurationStepV2,
   },
   UNIT_AMENITIES: {
-    id: 'unit-amenities',
+    id: 'unitAmenities',
     name: 'Unit Amenities',
     component: UnitAmenitiesStepV2,
   },
   LOCATION_ATTRIBUTES: {
-    id: 'location-attributes',
+    id: 'locationAttributes',
     name: 'Location Attributes',
     component: LocationStepV2,
   },
   FLOOR_DETAILS: {
-    id: 'floor-details',
+    id: 'floorDetails',
     name: 'Floor Details',
     component: FloorDetailsStepV2,
   },
   LAND_ATTRIBUTES: {
-    id: 'land-attributes',
+    id: 'landAttributes',
     name: 'Land Attributes',
     component: LandAttributesStepV2,
   },
   PRICING: {
-    id: 'pricing',
+    id: 'pricingInformation',
     name: 'Pricing',
     component: PricingStepV2,
   },
   LISTING_INFO: {
-    id: 'listing-info',
+    id: 'listingInformation',
     name: 'Listing Info',
     component: ListingInfoStepV2,
   },
   PROPERTY_AMENITIES: {
-    id: 'property-amenities',
+    id: 'propertyAmenities',
     name: 'Property Amenities',
     component: PropertyAmenitiesStepV2,
   },
   MEDIA_UPLOAD: {
-    id: 'media-upload',
+    id: 'mediaUpload',
     name: 'Media & Documents',
     component: MediaUploadStepV2,
+  },
+  SUITABLE_FOR: {
+    id: 'suitableFor',
+    name: 'Suitable For',
+    component: SuitableForStepV2,
   },
 };
 
@@ -321,7 +328,7 @@ export const getAvailablePropertyTypes = () =>
  */
 export const isBuildingType = (propertyType) => {
   const steps = PROPERTY_TYPE_STEPS[propertyType] || [];
-  return steps.some(step => step.id === 'basic-configuration');
+  return steps.some(step => step.id === 'basicConfiguration');
 };
 
 /**
@@ -329,7 +336,7 @@ export const isBuildingType = (propertyType) => {
  */
 export const isLandType = (propertyType) => {
   const steps = PROPERTY_TYPE_STEPS[propertyType] || [];
-  return steps.some(step => step.id === 'land-attributes');
+  return steps.some(step => step.id === 'landAttributes');
 };
 
 /**

@@ -40,10 +40,18 @@ export default function PropertyCard({ listing, index, onEdit, onDelete }) {
 
   // Extract data from raw API structure
   const draftId = listing.draftId;
-  const title = listing.draftData?.title || listing.draftData?.customPropertyName || listing.draftData?.projectName || 'Untitled Property';
-  const location = listing.draftData?.locality || listing.draftData?.city || 'Location not set';
-  const propertyType = listing.draftData?.propertyType || 'Not specified';
-  const listingType = listing.draftData?.listingType || 'sale';
+  const title = listing.draftData?.title || listing.draftData?.basicDetails?.customPropertyName || listing.draftData?.customPropertyName || listing.draftData?.projectName || 'Untitled Property';
+  const location = listing.draftData?.locationSelection?.locality || listing.draftData?.locationSelection?.city || listing.draftData?.locality || listing.draftData?.city || 'Location not set';
+  
+  // Handle propertyType - it can be a string or an object with propertyType key
+  let propertyType = 'Not specified';
+  if (typeof listing.draftData?.propertyType === 'string') {
+    propertyType = listing.draftData.propertyType;
+  } else if (typeof listing.draftData?.propertyType === 'object' && listing.draftData?.propertyType?.propertyType) {
+    propertyType = listing.draftData.propertyType.propertyType;
+  }
+  
+  const listingType = listing.draftData?.basicDetails?.listingType || listing.draftData?.listingType || 'sale';
   
   const status = listing.draftStatus?.toLowerCase() || 'draft';
   const image = listing.draftData?.mediaData?.[0]?.url || null;
@@ -119,9 +127,9 @@ export default function PropertyCard({ listing, index, onEdit, onDelete }) {
             <Badge variant="secondary" className="text-xs capitalize">
               {listingType}
             </Badge>
-            <Badge variant="outline" className="text-xs font-medium">
+            <Badge variant="outline" className="text-xs font-medium capitalize">
               <Building2 className="w-3 h-3 mr-1" />
-              {propertyType}
+              {String(propertyType).replace(/_/g, ' ')}
             </Badge>
           </div>
         </CardContent>

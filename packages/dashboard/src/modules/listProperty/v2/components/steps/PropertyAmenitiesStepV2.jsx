@@ -29,7 +29,7 @@ const FEATURES_LIST = [
 
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
 
-const STEP_ID = 'property-amenities';
+const STEP_ID = 'propertyAmenities';
 
 export default function PropertyAmenitiesStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

@@ -39,7 +39,7 @@ import { createStepLogger } from '../../../utils/validationLogger';
 
 const { basicDetailsSchema } = propertySchemas;
 
-const STEP_ID = 'basic-details';
+const STEP_ID = 'basicDetails';
 
 export default function BasicDetailsStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

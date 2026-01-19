@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { usePropertyFormV2 } from '../../context/PropertyFormContextV2';
 
-const STEP_ID = 'listing-info';
+const STEP_ID = 'listingInformation';
 
 export default function ListingInfoStepV2() {
   const { saveAndContinue, previousStep, getStepData, setCurrentStepSubmitHandler, setCurrentStepIsValid } = usePropertyFormV2();

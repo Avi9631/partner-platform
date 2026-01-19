@@ -43,12 +43,16 @@ export function usePropertyPublish(draftId, formData) {
     try {
       setIsPublishing(true);
       
+      // FormData already in propertySchema format - just sanitize
       const propertyData = sanitizeData({
         ...formData,
-        propertyName: formData.title || formData.propertyName || formData.customPropertyName,
+        // Handle property name from various possible locations
+        propertyName: formData.basicDetails?.customPropertyName ||
+                     formData.title || 
+                     formData.propertyName,
       });
 
-      console.log('Publishing property with data:', propertyData);
+      console.log('Publishing property in propertySchema format:', propertyData);
       const response = await propertyApi.publishProperty(draftId, propertyData);
 
       if (response.success) {

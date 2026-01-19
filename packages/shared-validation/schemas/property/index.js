@@ -21,3 +21,4 @@ export { default as suitableForSchema } from './suitableForSchema.js';
 export { default as summaryInsightsSchema } from './summaryInsightsSchema.js';
 export { default as transactionOwnerSchema } from './transactionOwnerSchema.js';
 export { default as unitAmenitiesSchema } from './unitAmenitiesSchema.js';
+export { default as propertySchema } from './propertySchema.js';

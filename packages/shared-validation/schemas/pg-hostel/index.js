@@ -11,3 +11,4 @@ export { default as locationDetailsPgSchema } from './locationDetailsPgSchema.js
 export { default as mediaUploadPgSchema } from './mediaUploadPgSchema.js';
 export { default as roomTypesPgSchema } from './roomTypesPgSchema.js';
 export { default as rulesRestrictionsPgSchema } from './rulesRestrictionsPgSchema.js';
+export { default as pgHostelSchema } from './pgHostelSchema.js';

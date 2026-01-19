@@ -12,3 +12,4 @@ export { default as legalDocsProjectSchema } from './legalDocsProjectSchema.js';
 export { default as locationDetailsProjectSchema } from './locationDetailsProjectSchema.js';
 export { default as mediaUploadProjectSchema } from './mediaUploadProjectSchema.js';
 export { default as pricingProjectSchema } from './pricingProjectSchema.js';
+export { default as projectSchema } from './projectSchema.js';
